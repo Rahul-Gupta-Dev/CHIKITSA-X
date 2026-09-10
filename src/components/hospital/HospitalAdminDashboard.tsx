@@ -82,10 +82,10 @@ export const HospitalAdminDashboard: React.FC<Props> = ({ onConsentRequested }) 
 
       {/* Main Verification Card */}
       <div className="glass-panel" style={{ padding: '28px', marginBottom: '28px' }}>
-        <h3 style={{ fontSize: '1.25rem', color: '#FFF', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <QrCode size={22} color="#10B981" /> Scan Patient QR / Enter Reference ID
+        <h3 style={{ fontSize: '1.25rem', color: 'var(--text-heading)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <QrCode size={22} color="var(--accent-green)" /> Scan Patient QR / Enter Reference ID
         </h3>
-        <p style={{ color: '#94A3B8', fontSize: '0.85rem', marginBottom: '20px' }}>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '20px' }}>
           Enter patient's appointment reference ID or scan digital visit pass to verify check-in
         </p>
 
@@ -105,7 +105,7 @@ export const HospitalAdminDashboard: React.FC<Props> = ({ onConsentRequested }) 
 
         {/* Quick Active Appointments List */}
         {appointments.length > 0 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', fontSize: '0.8rem', color: '#94A3B8', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
             <span>Active Hospital Appointments:</span>
             {appointments.map(a => (
               <button
@@ -115,7 +115,7 @@ export const HospitalAdminDashboard: React.FC<Props> = ({ onConsentRequested }) 
                   handleVerify(a.referenceId);
                 }}
                 className="btn btn-secondary btn-sm"
-                style={{ fontSize: '0.78rem', padding: '4px 10px', border: inputRefId === a.referenceId ? '1px solid #10B981' : '1px solid rgba(255,255,255,0.1)' }}
+                style={{ fontSize: '0.78rem', padding: '4px 10px', border: inputRefId === a.referenceId ? '1px solid var(--accent-green)' : '1px solid var(--border-light)' }}
               >
                 {a.referenceId} ({a.patientName})
               </button>
@@ -128,48 +128,48 @@ export const HospitalAdminDashboard: React.FC<Props> = ({ onConsentRequested }) 
           <div style={{ marginTop: '24px' }}>
             {verificationResult.success && verificationResult.opd ? (
               <div style={{
-                background: 'rgba(16, 185, 129, 0.15)',
-                border: '1px solid #10B981',
+                background: 'rgba(21, 128, 61, 0.08)',
+                border: '1px solid var(--accent-green)',
                 borderRadius: '16px',
                 padding: '20px'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <CheckCircle2 size={28} color="#10B981" />
+                    <CheckCircle2 size={28} color="var(--accent-green)" />
                     <div>
-                      <div style={{ color: '#10B981', fontWeight: 700, fontSize: '1.1rem' }}>✓ APPOINTMENT VERIFIED SUCCESSFUL</div>
-                      <div style={{ color: '#CBD5E1', fontSize: '0.85rem' }}>Staff Verification & Patient Check-in Complete</div>
+                      <div style={{ color: 'var(--accent-green)', fontWeight: 700, fontSize: '1.1rem' }}>✓ APPOINTMENT VERIFIED SUCCESSFUL</div>
+                      <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Staff Verification & Patient Check-in Complete</div>
                     </div>
                   </div>
                   <span className="badge badge-green">CHECK-IN VERIFIED</span>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', fontSize: '0.9rem', color: '#FFF', margin: '16px 0' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', fontSize: '0.9rem', color: 'var(--text-main)', margin: '16px 0' }}>
                   <div>
-                    <span style={{ color: '#94A3B8', fontSize: '0.8rem' }}>Reference ID:</span>
-                    <div style={{ fontWeight: 700, color: '#00B4D8' }}>{verificationResult.opd.referenceId}</div>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Reference ID:</span>
+                    <div style={{ fontWeight: 700, color: 'var(--primary-teal)' }}>{verificationResult.opd.referenceId}</div>
                   </div>
                   <div>
-                    <span style={{ color: '#94A3B8', fontSize: '0.8rem' }}>Patient Name:</span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Patient Name:</span>
                     <div style={{ fontWeight: 600 }}>{verificationResult.opd.patientName}</div>
                   </div>
                   <div>
-                    <span style={{ color: '#94A3B8', fontSize: '0.8rem' }}>Department & Doctor:</span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Department & Doctor:</span>
                     <div style={{ fontWeight: 600 }}>{verificationResult.opd.doctorName} ({verificationResult.opd.department})</div>
                   </div>
                   <div>
-                    <span style={{ color: '#94A3B8', fontSize: '0.8rem' }}>Date & Time Slot:</span>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Date & Time Slot:</span>
                     <div style={{ fontWeight: 600 }}>{verificationResult.opd.appointmentDate} at {verificationResult.opd.appointmentTime}</div>
                   </div>
                 </div>
 
                 {/* Patient Consent Status Protocol */}
-                <div style={{ background: 'rgba(15, 23, 42, 0.7)', borderRadius: '12px', padding: '16px', marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                <div style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-light)', borderRadius: '12px', padding: '16px', marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#A78BFA', fontWeight: 600, fontSize: '0.9rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-purple)', fontWeight: 600, fontSize: '0.9rem' }}>
                       <Lock size={16} /> Patient Medical Record Access Consent Status:
                     </div>
-                    <div style={{ color: activeConsent?.status === 'GRANTED' ? '#10B981' : '#F59E0B', fontSize: '0.85rem', marginTop: '2px' }}>
+                    <div style={{ color: activeConsent?.status === 'GRANTED' ? 'var(--accent-green)' : 'var(--warning-amber)', fontSize: '0.85rem', marginTop: '2px' }}>
                       {activeConsent?.status === 'GRANTED'
                         ? '✓ GRANTED BY PATIENT: Doctor unlocked clinical profile'
                         : activeConsent?.status === 'PENDING'
@@ -186,7 +186,7 @@ export const HospitalAdminDashboard: React.FC<Props> = ({ onConsentRequested }) 
                 </div>
               </div>
             ) : (
-              <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #EF4444', borderRadius: '12px', padding: '16px', color: '#F87171', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ background: 'rgba(220, 38, 38, 0.1)', border: '1px solid var(--danger-red)', borderRadius: '12px', padding: '16px', color: 'var(--danger-red)', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <AlertCircle size={20} /> {verificationResult.message}
               </div>
             )}
@@ -196,10 +196,10 @@ export const HospitalAdminDashboard: React.FC<Props> = ({ onConsentRequested }) 
 
       {/* Audit Log Panel */}
       <div className="glass-panel" style={{ padding: '24px' }}>
-        <h4 style={{ color: '#FFF', fontSize: '1.1rem', marginBottom: '14px' }}>Recent Hospital Check-in Audit Logs</h4>
+        <h4 style={{ color: 'var(--text-heading)', fontSize: '1.1rem', marginBottom: '14px' }}>Recent Hospital Check-in Audit Logs</h4>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.82rem' }}>
           {db.getAuditLogs().slice(0, 5).map(log => (
-            <div key={log.id} style={{ background: 'rgba(15, 23, 42, 0.5)', padding: '10px 14px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', color: '#CBD5E1' }}>
+            <div key={log.id} style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-light)', padding: '10px 14px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
               <span>[{log.timestamp}] <strong>{log.action}</strong>: {log.details}</span>
               <span className="badge badge-teal">{log.actorRole}</span>
             </div>

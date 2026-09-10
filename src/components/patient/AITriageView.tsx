@@ -34,12 +34,12 @@ export const AITriageView: React.FC<Props> = ({
     <div className="glass-panel" style={{ padding: '24px', margin: '20px 0' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ background: 'linear-gradient(135deg, #7C3AED 0%, #00B4D8 100%)', padding: '10px', borderRadius: '12px', color: '#FFF' }}>
+          <div style={{ background: 'linear-gradient(135deg, #6D28D9 0%, #0284C7 100%)', padding: '10px', borderRadius: '12px', color: '#FFF' }}>
             <Activity size={24} />
           </div>
           <div>
-            <h3 style={{ fontSize: '1.3rem', color: '#FFF', margin: 0 }}>AI-Assisted Clinical Triage Engine</h3>
-            <p style={{ color: '#94A3B8', fontSize: '0.85rem', margin: 0 }}>Risk & Urgency Evaluation based on Unified Symptoms & Medical History</p>
+            <h3 style={{ fontSize: '1.3rem', color: 'var(--text-heading)', margin: 0 }}>AI-Assisted Clinical Triage Engine</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>Risk & Urgency Evaluation based on Unified Symptoms & Medical History</p>
           </div>
         </div>
 
@@ -55,11 +55,11 @@ export const AITriageView: React.FC<Props> = ({
           {/* Risk Level Banner */}
           <div style={{
             background: triage.riskLevel === 'HIGH'
-              ? 'rgba(239, 68, 68, 0.15)'
+              ? 'rgba(220, 38, 38, 0.08)'
               : triage.riskLevel === 'MODERATE'
-              ? 'rgba(245, 158, 11, 0.15)'
-              : 'rgba(16, 185, 129, 0.15)',
-            border: `1px solid ${triage.riskLevel === 'HIGH' ? '#EF4444' : triage.riskLevel === 'MODERATE' ? '#F59E0B' : '#10B981'}`,
+              ? 'rgba(180, 83, 9, 0.08)'
+              : 'rgba(21, 128, 61, 0.08)',
+            border: `1px solid ${triage.riskLevel === 'HIGH' ? '#DC2626' : triage.riskLevel === 'MODERATE' ? '#B45309' : '#15803D'}`,
             borderRadius: '16px',
             padding: '20px',
             marginBottom: '20px',
@@ -73,11 +73,11 @@ export const AITriageView: React.FC<Props> = ({
               <span className={`badge ${triage.riskLevel === 'HIGH' ? 'badge-red' : triage.riskLevel === 'MODERATE' ? 'badge-amber' : 'badge-green'}`}>
                 RISK LEVEL: {triage.riskLevel}
               </span>
-              <h3 style={{ fontSize: '1.5rem', color: '#FFF', margin: '6px 0 2px' }}>
+              <h3 style={{ fontSize: '1.45rem', color: 'var(--text-heading)', margin: '6px 0 2px' }}>
                 Urgency: {triage.urgency}
               </h3>
-              <p style={{ color: '#CBD5E1', fontSize: '0.9rem', margin: 0 }}>
-                Recommended Specialty: <strong style={{ color: '#00B4D8' }}>{triage.recommendedSpecialty}</strong>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: 0 }}>
+                Recommended Specialty: <strong style={{ color: 'var(--primary-teal-dark)' }}>{triage.recommendedSpecialty}</strong>
               </p>
             </div>
 
@@ -94,8 +94,8 @@ export const AITriageView: React.FC<Props> = ({
 
           {/* Clinical Reasoning Grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-            <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '12px', padding: '16px' }}>
-              <h4 style={{ color: '#00B4D8', fontSize: '0.9rem', marginBottom: '10px', textTransform: 'uppercase' }}>
+            <div style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-light)', borderRadius: '12px', padding: '16px' }}>
+              <h4 style={{ color: 'var(--primary-teal-dark)', fontSize: '0.85rem', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Symptoms Evaluated
               </h4>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -105,14 +105,14 @@ export const AITriageView: React.FC<Props> = ({
               </div>
             </div>
 
-            <div style={{ background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '12px', padding: '16px' }}>
-              <h4 style={{ color: '#A78BFA', fontSize: '0.9rem', marginBottom: '10px', textTransform: 'uppercase' }}>
+            <div style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-light)', borderRadius: '12px', padding: '16px' }}>
+              <h4 style={{ color: 'var(--accent-purple)', fontSize: '0.85rem', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Clinical Reasoning Breakdown
               </h4>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.85rem', color: '#CBD5E1' }}>
+              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.88rem', color: 'var(--text-main)' }}>
                 {triage.clinicalReasoning.map((r, idx) => (
                   <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                    <CheckCircle2 size={16} color="#A78BFA" style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <CheckCircle2 size={16} color="var(--accent-purple)" style={{ flexShrink: 0, marginTop: '2px' }} />
                     <span>{r}</span>
                   </li>
                 ))}
@@ -122,7 +122,7 @@ export const AITriageView: React.FC<Props> = ({
         </div>
       ) : (
         <div style={{ textAlign: 'center', padding: '30px 0' }}>
-          <p style={{ color: '#94A3B8', marginBottom: '16px' }}>Click below to synthesize voice intake and medical records into a clinical triage guidance report.</p>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '16px' }}>Click below to synthesize voice intake and medical records into a clinical triage guidance report.</p>
           <button onClick={handleRunTriage} disabled={isLoading} className="btn btn-purple">
             Synthesize Triage Report <Sparkles size={16} />
           </button>

@@ -21,16 +21,16 @@ export const RoleSwitcherBar: React.FC<Props> = ({ currentRole, onRoleChange }) 
 
   return (
     <div style={{
-      background: 'linear-gradient(90deg, #0A192F 0%, #1C2541 100%)',
-      borderBottom: '1px solid rgba(0, 180, 216, 0.25)',
+      background: 'var(--bg-header)',
+      borderBottom: '1px solid var(--border-light)',
       padding: '8px 16px',
       fontSize: '0.85rem'
-    }} className="flex flex-wrap items-center justify-between gap-3 text-slate-200">
+    }} className="flex flex-wrap items-center justify-between gap-3">
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         <span className="badge badge-purple" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
           <Shield size={13} /> SIH DEMO MODE
         </span>
-        <span style={{ color: '#94A3B8', fontSize: '0.82rem' }}>Quick Role Switcher for Judges:</span>
+        <span style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', fontWeight: 600 }}>Quick Role Switcher for Judges:</span>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

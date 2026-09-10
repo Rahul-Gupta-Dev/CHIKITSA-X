@@ -51,7 +51,7 @@ export const DoctorDashboard: React.FC<Props> = ({ onCostEstimateCreated }) => {
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
       {/* Doctor Workspace Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
+        background: 'linear-gradient(135deg, #6D28D9 0%, #5B21B6 100%)',
         borderRadius: '20px',
         padding: '24px 30px',
         marginBottom: '24px',
@@ -59,18 +59,18 @@ export const DoctorDashboard: React.FC<Props> = ({ onCostEstimateCreated }) => {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        boxShadow: '0 8px 24px rgba(124, 58, 237, 0.3)'
+        boxShadow: 'var(--shadow-md)'
       }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <Stethoscope size={24} />
+            <Stethoscope size={24} color="#FFF" />
             <h2 style={{ fontSize: '1.6rem', color: '#FFF', margin: 0 }}>Doctor Clinical Consultation Desk</h2>
           </div>
-          <p style={{ opacity: 0.9, fontSize: '0.9rem', margin: 0 }}>
+          <p style={{ opacity: 0.9, fontSize: '0.9rem', margin: 0, color: '#F1F5F9' }}>
             Dr. Rajesh Kulkarni (Senior Cardiologist) • CarePlus Super Specialty Hospital
           </p>
         </div>
-        <span className="badge badge-purple" style={{ background: '#FFF', color: '#6D28D9', fontSize: '0.82rem' }}>
+        <span className="badge badge-purple" style={{ background: '#FFF', color: '#6D28D9', fontSize: '0.82rem', fontWeight: 700 }}>
           DOCTOR WORKSPACE
         </span>
       </div>
@@ -78,12 +78,12 @@ export const DoctorDashboard: React.FC<Props> = ({ onCostEstimateCreated }) => {
       <DisclaimerBanner text="AI information is decision-support only. Doctor verification and clinical evaluation is required." />
 
       {/* Main Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
         {/* Left: Patient Authorized Medical File */}
         <div className="glass-panel" style={{ padding: '24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h3 style={{ color: '#FFF', fontSize: '1.2rem', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <User size={20} color="#7C3AED" /> Patient Clinical Profile
+            <h3 style={{ color: 'var(--text-heading)', fontSize: '1.2rem', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <User size={20} color="var(--accent-purple)" /> Patient Clinical Profile
             </h3>
             <span className={`badge ${isConsentGranted ? 'badge-green' : 'badge-amber'}`}>
               {isConsentGranted ? '✓ CONSENT GRANTED' : '🔒 CONSENT PENDING'}
@@ -91,10 +91,10 @@ export const DoctorDashboard: React.FC<Props> = ({ onCostEstimateCreated }) => {
           </div>
 
           {!isConsentGranted ? (
-            <div style={{ background: 'rgba(245, 158, 11, 0.15)', border: '1px solid #F59E0B', borderRadius: '12px', padding: '20px', textAlign: 'center', color: '#FBBF24' }}>
+            <div style={{ background: 'rgba(180, 83, 9, 0.1)', border: '1px solid var(--warning-amber)', borderRadius: '12px', padding: '20px', textAlign: 'center', color: 'var(--warning-amber)' }}>
               <Lock size={36} style={{ margin: '0 auto 10px' }} />
-              <h4 style={{ color: '#FFF', marginBottom: '6px' }}>Patient Access Restricted</h4>
-              <p style={{ fontSize: '0.85rem', color: '#CBD5E1', marginBottom: '12px' }}>
+              <h4 style={{ color: 'var(--text-heading)', marginBottom: '6px' }}>Patient Access Restricted</h4>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
                 Full medical history requires patient consent approval. Ask the patient to approve consent on their dashboard or click below to simulate approval.
               </p>
               <button
@@ -112,29 +112,29 @@ export const DoctorDashboard: React.FC<Props> = ({ onCostEstimateCreated }) => {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {/* Personal Vitals Box */}
-              <div style={{ background: 'rgba(15, 23, 42, 0.6)', borderRadius: '12px', padding: '14px' }}>
-                <div style={{ fontWeight: 700, color: '#FFF', fontSize: '1.1rem' }}>{profile.fullName} (Age {profile.age}, {profile.gender})</div>
-                <div style={{ color: '#94A3B8', fontSize: '0.82rem', margin: '2px 0 8px' }}>Ref ID: {opds[0]?.referenceId || 'CHX-2026-8A92F'} • Blood Group: {profile.bloodGroup}</div>
+              <div style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-light)', borderRadius: '12px', padding: '14px' }}>
+                <div style={{ fontWeight: 700, color: 'var(--text-heading)', fontSize: '1.1rem' }}>{profile.fullName} (Age {profile.age}, {profile.gender})</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem', margin: '2px 0 8px' }}>Ref ID: {opds[0]?.referenceId || 'CHX-2026-8A92F'} • Blood Group: {profile.bloodGroup}</div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px', fontSize: '0.8rem', textAlign: 'center' }}>
-                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '6px', borderRadius: '6px' }}>
-                    <span style={{ color: '#94A3B8' }}>BP:</span> <strong style={{ color: '#10B981', display: 'block' }}>{profile.vitalSigns?.bp}</strong>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', fontSize: '0.8rem', textAlign: 'center' }}>
+                  <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-light)', padding: '6px', borderRadius: '6px' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>BP:</span> <strong style={{ color: 'var(--accent-green)', display: 'block' }}>{profile.vitalSigns?.bp}</strong>
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '6px', borderRadius: '6px' }}>
-                    <span style={{ color: '#94A3B8' }}>Pulse:</span> <strong style={{ color: '#10B981', display: 'block' }}>{profile.vitalSigns?.pulse}</strong>
+                  <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-light)', padding: '6px', borderRadius: '6px' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>Pulse:</span> <strong style={{ color: 'var(--accent-green)', display: 'block' }}>{profile.vitalSigns?.pulse}</strong>
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '6px', borderRadius: '6px' }}>
-                    <span style={{ color: '#94A3B8' }}>SpO2:</span> <strong style={{ color: '#10B981', display: 'block' }}>{profile.vitalSigns?.spo2}</strong>
+                  <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-light)', padding: '6px', borderRadius: '6px' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>SpO2:</span> <strong style={{ color: 'var(--accent-green)', display: 'block' }}>{profile.vitalSigns?.spo2}</strong>
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.05)', padding: '6px', borderRadius: '6px' }}>
-                    <span style={{ color: '#94A3B8' }}>Temp:</span> <strong style={{ color: '#10B981', display: 'block' }}>{profile.vitalSigns?.temp}</strong>
+                  <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-light)', padding: '6px', borderRadius: '6px' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>Temp:</span> <strong style={{ color: 'var(--accent-green)', display: 'block' }}>{profile.vitalSigns?.temp}</strong>
                   </div>
                 </div>
               </div>
 
               {/* Symptoms & Voice Transcript */}
               <div>
-                <h4 style={{ color: '#00B4D8', fontSize: '0.85rem', textTransform: 'uppercase', marginBottom: '6px' }}>Active Reported Symptoms</h4>
+                <h4 style={{ color: 'var(--primary-teal-dark)', fontSize: '0.85rem', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 700 }}>Active Reported Symptoms</h4>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                   {profile.symptoms.map((s, i) => (
                     <span key={i} className="badge badge-teal">{s}</span>
@@ -144,19 +144,19 @@ export const DoctorDashboard: React.FC<Props> = ({ onCostEstimateCreated }) => {
 
               {/* OCR Medical History & Medicines */}
               <div>
-                <h4 style={{ color: '#A78BFA', fontSize: '0.85rem', textTransform: 'uppercase', marginBottom: '6px' }}>Extracted Medical History & Prescriptions</h4>
-                <div style={{ fontSize: '0.85rem', color: '#CBD5E1' }}>
+                <h4 style={{ color: 'var(--accent-purple)', fontSize: '0.85rem', textTransform: 'uppercase', marginBottom: '6px', fontWeight: 700 }}>Extracted Medical History & Prescriptions</h4>
+                <div style={{ fontSize: '0.85rem', color: 'var(--text-main)' }}>
                   <div><strong>History:</strong> {profile.medicalHistory.join(', ')}</div>
                   <div><strong>Medicines:</strong> {profile.medications.join(', ')}</div>
-                  <div><strong>Allergies:</strong> <span style={{ color: '#EF4444' }}>{profile.allergies.join(', ')}</span></div>
+                  <div><strong>Allergies:</strong> <span style={{ color: 'var(--danger-red)' }}>{profile.allergies.join(', ')}</span></div>
                 </div>
               </div>
 
               {/* AI Triage Banner */}
               {triage && (
-                <div style={{ background: 'rgba(124, 58, 237, 0.15)', border: '1px solid #7C3AED', borderRadius: '10px', padding: '12px' }}>
-                  <div style={{ fontSize: '0.8rem', color: '#A78BFA', fontWeight: 600 }}>AI TRIAGE RECOMMENDATION:</div>
-                  <div style={{ color: '#FFF', fontWeight: 700, fontSize: '0.95rem' }}>{triage.riskLevel} RISK • {triage.urgency}</div>
+                <div style={{ background: 'rgba(109, 40, 217, 0.08)', border: '1px solid var(--accent-purple)', borderRadius: '10px', padding: '12px' }}>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--accent-purple)', fontWeight: 700 }}>AI TRIAGE RECOMMENDATION:</div>
+                  <div style={{ color: 'var(--text-heading)', fontWeight: 700, fontSize: '0.95rem' }}>{triage.riskLevel} RISK • {triage.urgency}</div>
                 </div>
               )}
             </div>
@@ -165,8 +165,8 @@ export const DoctorDashboard: React.FC<Props> = ({ onCostEstimateCreated }) => {
 
         {/* Right: Doctor Clinical Entry & Treatment Plan */}
         <div className="glass-panel" style={{ padding: '24px' }}>
-          <h3 style={{ color: '#FFF', fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <FileText size={20} color="#10B981" /> Clinical Notes & Treatment Plan
+          <h3 style={{ color: 'var(--text-heading)', fontSize: '1.2rem', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <FileText size={20} color="var(--accent-green)" /> Clinical Notes & Treatment Plan
           </h3>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '20px' }}>
@@ -212,7 +212,7 @@ export const DoctorDashboard: React.FC<Props> = ({ onCostEstimateCreated }) => {
           </div>
 
           {savedConsultation && (
-            <div style={{ marginTop: '16px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid #10B981', borderRadius: '10px', padding: '12px', color: '#10B981', fontSize: '0.85rem' }}>
+            <div style={{ marginTop: '16px', background: 'rgba(21, 128, 61, 0.12)', border: '1px solid var(--accent-green)', borderRadius: '10px', padding: '12px', color: 'var(--accent-green)', fontSize: '0.85rem', fontWeight: 600 }}>
               ✓ Consultation saved! Patient can now view treatment plan and proceed to Financial Support.
             </div>
           )}

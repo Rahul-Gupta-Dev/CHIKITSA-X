@@ -25,7 +25,7 @@ export const HospitalPassQR: React.FC<Props> = ({ opd, onSimulateHospitalVerify 
         width: 180,
         margin: 2,
         color: {
-          dark: '#0A192F',
+          dark: '#0F172A',
           light: '#FFFFFF'
         }
       }, (err) => {
@@ -35,20 +35,20 @@ export const HospitalPassQR: React.FC<Props> = ({ opd, onSimulateHospitalVerify 
   }, [opd]);
 
   return (
-    <div className="glass-panel" style={{ padding: '24px', margin: '20px 0', border: '1px solid #00B4D8' }}>
+    <div className="glass-panel" style={{ padding: '24px', margin: '20px 0', border: '1px solid var(--primary-teal)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ background: 'linear-gradient(135deg, #00B4D8 0%, #10B981 100%)', padding: '10px', borderRadius: '12px', color: '#FFF' }}>
+          <div style={{ background: 'linear-gradient(135deg, #0284C7 0%, #15803D 100%)', padding: '10px', borderRadius: '12px', color: '#FFF' }}>
             <QrCode size={24} />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <h3 style={{ fontSize: '1.3rem', color: '#FFF', margin: 0 }}>Digital Hospital Visit Pass</h3>
+              <h3 style={{ fontSize: '1.3rem', color: 'var(--text-heading)', margin: 0 }}>Digital Hospital Visit Pass</h3>
               <span className={`badge ${opd.status === 'VERIFIED' ? 'badge-green' : 'badge-teal'}`}>
                 STATUS: {opd.status}
               </span>
             </div>
-            <p style={{ color: '#94A3B8', fontSize: '0.85rem', margin: 0 }}>Present this QR pass at the hospital reception staff desk</p>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>Present this QR pass at the hospital reception staff desk</p>
           </div>
         </div>
 
@@ -60,8 +60,8 @@ export const HospitalPassQR: React.FC<Props> = ({ opd, onSimulateHospitalVerify 
       </div>
 
       <div style={{
-        background: 'linear-gradient(135deg, #1C2541 0%, #0B132B 100%)',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
+        background: 'var(--bg-subtle)',
+        border: '1px solid var(--border-light)',
         borderRadius: '16px',
         padding: '24px',
         display: 'flex',
@@ -73,25 +73,25 @@ export const HospitalPassQR: React.FC<Props> = ({ opd, onSimulateHospitalVerify 
       }}>
         {/* Left: Details */}
         <div style={{ flex: 1, minWidth: '240px' }}>
-          <div style={{ fontSize: '0.8rem', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px', fontWeight: 600 }}>
             UNIQUE REFERENCE IDENTIFIER
           </div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#00B4D8', fontFamily: 'Outfit', letterSpacing: '0.05em', marginBottom: '16px' }}>
+          <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--primary-teal-dark)', fontFamily: 'Outfit', letterSpacing: '0.05em', marginBottom: '16px' }}>
             {opd.referenceId}
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.9rem', color: '#CBD5E1' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.9rem', color: 'var(--text-main)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <User size={16} color="#00B4D8" /> <span>Patient: <strong>{opd.patientName}</strong></span>
+              <User size={16} color="var(--primary-teal)" /> <span>Patient: <strong>{opd.patientName}</strong></span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Building2 size={16} color="#00B4D8" /> <span>Hospital: <strong>{opd.hospitalName}</strong></span>
+              <Building2 size={16} color="var(--primary-teal)" /> <span>Hospital: <strong>{opd.hospitalName}</strong></span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Stethoscope size={16} color="#00B4D8" /> <span>Doctor: <strong>{opd.doctorName}</strong> ({opd.department})</span>
+              <Stethoscope size={16} color="var(--primary-teal)" /> <span>Doctor: <strong>{opd.doctorName}</strong> ({opd.department})</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Calendar size={16} color="#00B4D8" /> <span>Slot: <strong>{opd.appointmentDate} at {opd.appointmentTime}</strong></span>
+              <Calendar size={16} color="var(--primary-teal)" /> <span>Slot: <strong>{opd.appointmentDate} at {opd.appointmentTime}</strong></span>
             </div>
           </div>
         </div>
@@ -104,16 +104,17 @@ export const HospitalPassQR: React.FC<Props> = ({ opd, onSimulateHospitalVerify 
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.4)'
+          boxShadow: 'var(--shadow-md)',
+          border: '1px solid var(--border-light)'
         }}>
           <canvas ref={canvasRef} />
-          <div style={{ marginTop: '8px', fontSize: '0.72rem', color: '#64748B', fontWeight: 600, textTransform: 'uppercase' }}>
+          <div style={{ marginTop: '8px', fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>
             SECURE TOKEN ENCRYPTED
           </div>
         </div>
       </div>
 
-      <div style={{ marginTop: '14px', fontSize: '0.78rem', color: '#94A3B8', textAlign: 'center' }}>
+      <div style={{ marginTop: '14px', fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center' }}>
         <strong>Privacy Note:</strong> Raw medical health records are NOT stored inside this QR payload. Only an encrypted reference token is encoded for verification.
       </div>
     </div>

@@ -224,8 +224,8 @@ export const VoiceIntakeModal: React.FC<Props> = ({ isOpen, onClose, onIntakeCom
           </div>
         ) : (
           <div>
-            <div style={{ background: 'rgba(16, 185, 129, 0.12)', border: '1px solid #10B981', borderRadius: '14px', padding: '16px', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#059669', fontWeight: 700, fontSize: '1rem', marginBottom: '8px' }}>
+            <div style={{ background: 'rgba(21, 128, 61, 0.08)', border: '1px solid var(--accent-green)', borderRadius: '14px', padding: '16px', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-green)', fontWeight: 700, fontSize: '1rem', marginBottom: '8px' }}>
                 <CheckCircle size={20} /> AI Symptom Extraction Completed
               </div>
 

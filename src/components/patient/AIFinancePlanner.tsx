@@ -19,14 +19,14 @@ export const AIFinancePlanner: React.FC<Props> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content" style={{ maxWidth: '850px' }}>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" style={{ maxWidth: '850px' }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <div>
             <span className="badge badge-purple">AI SCENARIO PLANNER</span>
-            <h3 style={{ color: '#FFF', fontSize: '1.4rem', margin: '4px 0 0' }}>Care-to-Cost AI Finance Scenario Comparison</h3>
+            <h3 style={{ color: 'var(--text-heading)', fontSize: '1.4rem', margin: '4px 0 0' }}>Care-to-Cost AI Finance Scenario Comparison</h3>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.4rem', cursor: 'pointer' }}>
             <X size={20} />
           </button>
         </div>
@@ -43,8 +43,8 @@ export const AIFinancePlanner: React.FC<Props> = ({ isOpen, onClose }) => {
                 key={scen.id}
                 onClick={() => setSelectedScenario(scen.id)}
                 style={{
-                  background: isSelected ? 'rgba(0, 180, 216, 0.15)' : 'rgba(15, 23, 42, 0.7)',
-                  border: `2px solid ${isSelected ? '#00B4D8' : 'rgba(255, 255, 255, 0.12)'}`,
+                  background: isSelected ? 'rgba(2, 132, 199, 0.08)' : 'var(--bg-subtle)',
+                  border: `2px solid ${isSelected ? 'var(--primary-teal)' : 'var(--border-light)'}`,
                   borderRadius: '16px',
                   padding: '20px',
                   cursor: 'pointer',
@@ -58,31 +58,31 @@ export const AIFinancePlanner: React.FC<Props> = ({ isOpen, onClose }) => {
                   <span className={`badge ${scen.remainingGap === 0 ? 'badge-green' : 'badge-teal'}`} style={{ marginBottom: '8px' }}>
                     {scen.recommendationTag}
                   </span>
-                  <h4 style={{ color: '#FFF', fontSize: '1.05rem', margin: '6px 0 12px' }}>{scen.scenarioTitle}</h4>
+                  <h4 style={{ color: 'var(--text-heading)', fontSize: '1.05rem', margin: '6px 0 12px' }}>{scen.scenarioTitle}</h4>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.82rem', color: '#CBD5E1', marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.84rem', color: 'var(--text-main)', marginBottom: '16px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: '#94A3B8' }}>Estimated Cost:</span>
-                      <strong>₹{scen.estimatedCost.toLocaleString()}</strong>
+                      <span style={{ color: 'var(--text-muted)' }}>Estimated Cost:</span>
+                      <strong style={{ color: 'var(--text-heading)' }}>₹{scen.estimatedCost.toLocaleString()}</strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: '#94A3B8' }}>Insurance:</span>
-                      <span style={{ color: '#00B4D8' }}>-₹{scen.insuranceBenefit.toLocaleString()}</span>
+                      <span style={{ color: 'var(--text-muted)' }}>Insurance:</span>
+                      <span style={{ color: 'var(--primary-teal-dark)', fontWeight: 600 }}>-₹{scen.insuranceBenefit.toLocaleString()}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: '#94A3B8' }}>Gov Scheme:</span>
-                      <span style={{ color: '#10B981' }}>-₹{scen.governmentBenefit.toLocaleString()}</span>
+                      <span style={{ color: 'var(--text-muted)' }}>Gov Scheme:</span>
+                      <span style={{ color: 'var(--accent-green)', fontWeight: 600 }}>-₹{scen.governmentBenefit.toLocaleString()}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: '#94A3B8' }}>NGO Aid:</span>
-                      <span style={{ color: '#A78BFA' }}>-₹{scen.ngoBenefit.toLocaleString()}</span>
+                      <span style={{ color: 'var(--text-muted)' }}>NGO Aid:</span>
+                      <span style={{ color: 'var(--accent-purple)', fontWeight: 600 }}>-₹{scen.ngoBenefit.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
 
-                <div style={{ background: 'rgba(10, 25, 47, 0.8)', padding: '10px 12px', borderRadius: '10px', marginTop: 'auto' }}>
-                  <div style={{ fontSize: '0.75rem', color: '#94A3B8' }}>NET PATIENT OUT-OF-POCKET GAP:</div>
-                  <div style={{ fontSize: '1.3rem', fontWeight: 800, color: scen.remainingGap === 0 ? '#10B981' : '#F59E0B', fontFamily: 'Outfit' }}>
+                <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-light)', padding: '10px 12px', borderRadius: '10px', marginTop: 'auto' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>NET PATIENT OUT-OF-POCKET GAP:</div>
+                  <div style={{ fontSize: '1.3rem', fontWeight: 800, color: scen.remainingGap === 0 ? 'var(--accent-green)' : 'var(--warning-amber)', fontFamily: 'Outfit' }}>
                     ₹{scen.remainingGap.toLocaleString()}
                   </div>
                 </div>
@@ -92,12 +92,12 @@ export const AIFinancePlanner: React.FC<Props> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Savings Insight Banner */}
-        <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid #10B981', borderRadius: '14px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ background: 'rgba(21, 128, 61, 0.1)', border: '1px solid var(--accent-green)', borderRadius: '14px', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
           <div>
-            <div style={{ color: '#10B981', fontWeight: 700, fontSize: '0.95rem' }}>
+            <div style={{ color: 'var(--accent-green)', fontWeight: 700, fontSize: '0.95rem' }}>
               💡 Potential Out-of-Pocket Savings: ₹15,000
             </div>
-            <div style={{ color: '#CBD5E1', fontSize: '0.82rem', marginTop: '2px' }}>
+            <div style={{ color: 'var(--text-main)', fontSize: '0.82rem', marginTop: '2px' }}>
               By choosing Scenario B (AIIMS Referral) or applying full MJPJAY Gov scheme in Scenario C, your net financial gap becomes ₹0.
             </div>
           </div>

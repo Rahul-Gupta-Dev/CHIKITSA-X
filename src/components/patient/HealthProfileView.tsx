@@ -23,11 +23,11 @@ export const HealthProfileView: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <span className="badge badge-teal">UNIFIED HEALTH RECORD</span>
-          <h2 style={{ fontSize: '1.8rem', color: '#FFF', margin: '4px 0 0' }}>My Unified Patient Health Profile</h2>
+          <h2 style={{ fontSize: '1.75rem', color: 'var(--text-heading)', margin: '4px 0 0' }}>My Unified Patient Health Profile</h2>
         </div>
 
         <button onClick={() => isEditing ? handleSave() : setIsEditing(true)} className="btn btn-secondary btn-sm">
-          {isEditing ? <><CheckCircle2 size={16} color="#10B981" /> Save Changes</> : <><Edit3 size={16} /> Edit Profile</>}
+          {isEditing ? <><CheckCircle2 size={16} color="var(--accent-green)" /> Save Changes</> : <><Edit3 size={16} /> Edit Profile</>}
         </button>
       </div>
 
@@ -38,7 +38,7 @@ export const HealthProfileView: React.FC = () => {
         {/* Personal Details */}
         <div className="glass-panel" style={{ padding: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-            <img src={db.getCurrentUser().avatar} alt={profile.fullName} style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover' }} />
+            <img src={db.getCurrentUser().avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150'} alt={profile.fullName} style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover' }} />
             <div>
               {isEditing ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -50,36 +50,36 @@ export const HealthProfileView: React.FC = () => {
                 </div>
               ) : (
                 <>
-                  <h3 style={{ fontSize: '1.3rem', color: '#FFF', margin: 0 }}>{profile.fullName}</h3>
-                  <div style={{ color: '#94A3B8', fontSize: '0.82rem' }}>
-                    Age {profile.age} • {profile.gender} • Blood Group: <strong style={{ color: '#00B4D8' }}>{profile.bloodGroup}</strong>
+                  <h3 style={{ fontSize: '1.3rem', color: 'var(--text-heading)', margin: 0 }}>{profile.fullName}</h3>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>
+                    Age {profile.age} • {profile.gender} • Blood Group: <strong style={{ color: 'var(--primary-teal-dark)' }}>{profile.bloodGroup}</strong>
                   </div>
                 </>
               )}
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.88rem', color: '#CBD5E1' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.88rem', color: 'var(--text-main)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Phone size={16} color="#00B4D8" /> <span>{profile.phone}</span>
+              <Phone size={16} color="var(--primary-teal)" /> <span>{profile.phone}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <MapPin size={16} color="#00B4D8" /> <span>{profile.address}, {profile.city} ({profile.pincode})</span>
+              <MapPin size={16} color="var(--primary-teal)" /> <span>{profile.address}, {profile.city} ({profile.pincode})</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Heart size={16} color="#EF4444" /> <span>Emergency Contact: <strong>{profile.emergencyContact.name} ({profile.emergencyContact.relationship})</strong> - {profile.emergencyContact.phone}</span>
+              <Heart size={16} color="var(--danger-red)" /> <span>Emergency Contact: <strong>{profile.emergencyContact.name} ({profile.emergencyContact.relationship})</strong> - {profile.emergencyContact.phone}</span>
             </div>
           </div>
         </div>
 
         {/* Symptoms & History */}
         <div className="glass-panel" style={{ padding: '24px' }}>
-          <h4 style={{ color: '#00B4D8', fontSize: '0.95rem', textTransform: 'uppercase', marginBottom: '12px' }}>
+          <h4 style={{ color: 'var(--primary-teal-dark)', fontSize: '0.92rem', textTransform: 'uppercase', marginBottom: '12px', fontWeight: 700 }}>
             Active Symptoms & Medical History
           </h4>
 
           <div style={{ marginBottom: '14px' }}>
-            <div style={{ color: '#94A3B8', fontSize: '0.8rem', marginBottom: '6px' }}>Reported Symptoms:</div>
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '6px', fontWeight: 600 }}>Reported Symptoms:</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
               {profile.symptoms.map((s, i) => (
                 <span key={i} className="badge badge-teal">{s}</span>
@@ -88,8 +88,8 @@ export const HealthProfileView: React.FC = () => {
           </div>
 
           <div style={{ marginBottom: '14px' }}>
-            <div style={{ color: '#94A3B8', fontSize: '0.8rem', marginBottom: '4px' }}>Pre-existing Medical Conditions:</div>
-            <ul style={{ listStyle: 'none', color: '#FFF', fontSize: '0.85rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '4px', fontWeight: 600 }}>Pre-existing Medical Conditions:</div>
+            <ul style={{ listStyle: 'none', color: 'var(--text-main)', fontSize: '0.88rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
               {profile.medicalHistory.map((m, i) => (
                 <li key={i}>• {m}</li>
               ))}
@@ -99,16 +99,16 @@ export const HealthProfileView: React.FC = () => {
 
         {/* Medications & Allergies */}
         <div className="glass-panel" style={{ padding: '24px' }}>
-          <h4 style={{ color: '#10B981', fontSize: '0.95rem', textTransform: 'uppercase', marginBottom: '12px' }}>
+          <h4 style={{ color: 'var(--accent-green)', fontSize: '0.92rem', textTransform: 'uppercase', marginBottom: '12px', fontWeight: 700 }}>
             Extracted Prescriptions & Allergies
           </h4>
 
           <div style={{ marginBottom: '14px' }}>
-            <div style={{ color: '#94A3B8', fontSize: '0.8rem', marginBottom: '6px' }}>Active Medications (via OCR):</div>
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '6px', fontWeight: 600 }}>Active Medications (via OCR):</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               {profile.medications.map((med, i) => (
-                <div key={i} style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '8px 12px', borderRadius: '8px', color: '#FFF', fontSize: '0.85rem' }}>
-                  <Pill size={14} color="#10B981" style={{ display: 'inline', marginRight: '6px' }} />
+                <div key={i} style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-light)', padding: '8px 12px', borderRadius: '8px', color: 'var(--text-main)', fontSize: '0.88rem' }}>
+                  <Pill size={14} color="var(--accent-green)" style={{ display: 'inline', marginRight: '6px' }} />
                   {med}
                 </div>
               ))}
@@ -116,7 +116,7 @@ export const HealthProfileView: React.FC = () => {
           </div>
 
           <div>
-            <div style={{ color: '#94A3B8', fontSize: '0.8rem', marginBottom: '6px' }}>Known Allergies:</div>
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '6px', fontWeight: 600 }}>Known Allergies:</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
               {profile.allergies.map((all, i) => (
                 <span key={i} className="badge badge-red">{all}</span>
@@ -127,15 +127,15 @@ export const HealthProfileView: React.FC = () => {
 
         {/* Financial Profile Card */}
         <div className="glass-panel" style={{ padding: '24px' }}>
-          <h4 style={{ color: '#FBBF24', fontSize: '0.95rem', textTransform: 'uppercase', marginBottom: '12px' }}>
+          <h4 style={{ color: 'var(--warning-amber)', fontSize: '0.92rem', textTransform: 'uppercase', marginBottom: '12px', fontWeight: 700 }}>
             Financial & Scheme Eligibility Parameters
           </h4>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.85rem', color: '#CBD5E1' }}>
-            <div>Insurance Provider: <strong style={{ color: '#FFF' }}>{profile.insuranceProvider || 'Star Health'}</strong></div>
-            <div>Policy Number: <strong style={{ color: '#FFF' }}>{profile.policyNumber || 'SH-2024-998124'}</strong></div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.88rem', color: 'var(--text-main)' }}>
+            <div>Insurance Provider: <strong style={{ color: 'var(--text-heading)' }}>{profile.insuranceProvider || 'Star Health'}</strong></div>
+            <div>Policy Number: <strong style={{ color: 'var(--text-heading)' }}>{profile.policyNumber || 'SH-2024-998124'}</strong></div>
             <div>Ration Card Type: <span className="badge badge-green">{profile.rationCardType} (Eligible for PM-JAY)</span></div>
-            <div>Income Bracket: <strong style={{ color: '#FFF' }}>{profile.incomeCategory}</strong></div>
+            <div>Income Bracket: <strong style={{ color: 'var(--text-heading)' }}>{profile.incomeCategory}</strong></div>
           </div>
         </div>
       </div>

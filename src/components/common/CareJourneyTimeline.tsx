@@ -24,14 +24,14 @@ const STAGES = [
 export const CareJourneyTimeline: React.FC<Props> = ({ currentStage, onStageClick }) => {
   return (
     <div style={{
-      background: 'rgba(15, 23, 42, 0.75)',
-      border: '1px solid rgba(0, 180, 216, 0.25)',
+      background: 'var(--bg-subtle)',
+      border: '1px solid var(--border-light)',
       borderRadius: '16px',
       padding: '16px 20px',
       margin: '16px 0'
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-        <h4 style={{ fontSize: '0.9rem', color: '#00B4D8', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+        <h4 style={{ fontSize: '0.9rem', color: 'var(--primary-teal-dark)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0, fontWeight: 700 }}>
           Connected Patient Care Journey Tracking
         </h4>
         <span className="badge badge-teal">
@@ -62,7 +62,7 @@ export const CareJourneyTimeline: React.FC<Props> = ({ currentStage, onStageClic
                 alignItems: 'center',
                 minWidth: '80px',
                 cursor: onStageClick ? 'pointer' : 'default',
-                opacity: isDone || isCurrent ? 1 : 0.45,
+                opacity: isDone || isCurrent ? 1 : 0.6,
                 transition: 'opacity 0.2s'
               }}
             >
@@ -74,15 +74,15 @@ export const CareJourneyTimeline: React.FC<Props> = ({ currentStage, onStageClic
                 height: '32px',
                 borderRadius: '50%',
                 background: isDone
-                  ? '#10B981'
+                  ? 'var(--accent-green)'
                   : isCurrent
-                  ? 'linear-gradient(135deg, #00B4D8 0%, #7C3AED 100%)'
-                  : 'rgba(255, 255, 255, 0.1)',
-                color: '#FFF',
+                  ? 'linear-gradient(135deg, #0284C7 0%, #6D28D9 100%)'
+                  : 'var(--border-light)',
+                color: isDone || isCurrent ? '#FFF' : 'var(--text-muted)',
                 fontWeight: 700,
                 fontSize: '0.82rem',
                 marginBottom: '4px',
-                boxShadow: isCurrent ? '0 0 12px rgba(0, 180, 216, 0.6)' : 'none'
+                boxShadow: isCurrent ? '0 0 10px rgba(2, 132, 199, 0.4)' : 'none'
               }}>
                 {isDone ? <CheckCircle2 size={18} /> : s.id}
               </div>
@@ -90,7 +90,7 @@ export const CareJourneyTimeline: React.FC<Props> = ({ currentStage, onStageClic
               <span style={{
                 fontSize: '0.75rem',
                 fontWeight: isCurrent ? 700 : 500,
-                color: isCurrent ? '#00B4D8' : isDone ? '#10B981' : '#94A3B8',
+                color: isCurrent ? 'var(--primary-teal)' : isDone ? 'var(--accent-green)' : 'var(--text-muted)',
                 textAlign: 'center',
                 whiteSpace: 'nowrap'
               }}>

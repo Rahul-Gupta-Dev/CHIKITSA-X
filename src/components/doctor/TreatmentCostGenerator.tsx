@@ -60,11 +60,11 @@ export const TreatmentCostGenerator: React.FC<Props> = ({
               <Calculator size={22} />
             </div>
             <div>
-              <h3 style={{ fontSize: '1.25rem', color: '#FFF', margin: 0 }}>Treatment Cost Estimate Generator</h3>
-              <p style={{ color: '#94A3B8', fontSize: '0.8rem', margin: 0 }}>Generate indicative cost range for financial planning</p>
+              <h3 style={{ fontSize: '1.25rem', color: 'var(--text-heading)', margin: 0 }}>Treatment Cost Estimate Generator</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: 0 }}>Generate indicative cost range for financial planning</p>
             </div>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
             <X size={20} />
           </button>
         </div>
@@ -86,10 +86,10 @@ export const TreatmentCostGenerator: React.FC<Props> = ({
             <div>
               <label className="form-label">Room / Bed Category:</label>
               <select value={roomCategory} onChange={(e) => setRoomCategory(e.target.value)} className="form-control">
-                <option value="General Ward" style={{ background: '#1C2541' }}>General Ward</option>
-                <option value="Semi-Private AC Ward" style={{ background: '#1C2541' }}>Semi-Private AC Ward</option>
-                <option value="Private Deluxe Room" style={{ background: '#1C2541' }}>Private Deluxe Room</option>
-                <option value="Cardiac ICU" style={{ background: '#1C2541' }}>Cardiac ICU</option>
+                <option value="General Ward">General Ward</option>
+                <option value="Semi-Private AC Ward">Semi-Private AC Ward</option>
+                <option value="Private Deluxe Room">Private Deluxe Room</option>
+                <option value="Cardiac ICU">Cardiac ICU</option>
               </select>
             </div>
 
@@ -148,10 +148,10 @@ export const TreatmentCostGenerator: React.FC<Props> = ({
         </div>
 
         {/* Live Calculation Output Card */}
-        <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid #10B981', borderRadius: '14px', padding: '16px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ background: 'rgba(21, 128, 61, 0.08)', border: '1px solid var(--accent-green)', borderRadius: '14px', padding: '16px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <div style={{ color: '#94A3B8', fontSize: '0.82rem' }}>INDICATIVE ESTIMATED COST RANGE</div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#10B981', fontFamily: 'Outfit' }}>
+            <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem', fontWeight: 600 }}>INDICATIVE ESTIMATED COST RANGE</div>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--accent-green)', fontFamily: 'Outfit' }}>
               ₹{Math.round(totalCalc * 0.9).toLocaleString()} – ₹{Math.round(totalCalc * 1.15).toLocaleString()}
             </div>
           </div>

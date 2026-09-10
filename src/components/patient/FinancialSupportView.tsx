@@ -52,8 +52,8 @@ export const FinancialSupportView: React.FC<Props> = ({ onOpenPlanner }) => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <span className="badge badge-green">CORE FINTECH MODULE</span>
-          <h2 style={{ fontSize: '1.8rem', color: '#FFF', margin: '4px 0 0' }}>Care-to-Cost & Financial Assistance Platform</h2>
-          <p style={{ color: '#94A3B8', fontSize: '0.9rem', margin: 0 }}>
+          <h2 style={{ fontSize: '1.75rem', color: 'var(--text-heading)', margin: '4px 0 0' }}>Care-to-Cost & Financial Assistance Platform</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0 }}>
             Bridge your medical treatment gap by combining Insurance + Ayushman Bharat PM-JAY + NGO/CSR Grants
           </p>
         </div>
@@ -66,18 +66,18 @@ export const FinancialSupportView: React.FC<Props> = ({ onOpenPlanner }) => {
       <DisclaimerBanner type="FINANCIAL" text="All scheme eligibility, insurance cashless approvals, and NGO grants are estimated based on prototype rules." />
 
       {/* Main Financial Gap Calculation Card */}
-      <div className="glass-panel" style={{ padding: '28px', marginBottom: '28px', border: '1px solid #10B981' }}>
+      <div className="glass-panel" style={{ padding: '28px', marginBottom: '28px', border: '1px solid var(--accent-green)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
           <div>
-            <span style={{ color: '#94A3B8', fontSize: '0.85rem' }}>CURRENT TREATMENT COST ESTIMATE</span>
-            <div style={{ fontSize: '2rem', fontWeight: 800, color: '#FFF', fontFamily: 'Outfit' }}>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600 }}>CURRENT TREATMENT COST ESTIMATE</span>
+            <div style={{ fontSize: '2.2rem', fontWeight: 800, color: 'var(--text-heading)', fontFamily: 'Outfit' }}>
               ₹{estimatedCost.toLocaleString()}
             </div>
           </div>
 
           <div style={{ textAlign: 'right' }}>
-            <span style={{ color: '#94A3B8', fontSize: '0.85rem' }}>REMAINING FINANCIAL GAP</span>
-            <div style={{ fontSize: '2rem', fontWeight: 800, color: financialGap === 0 ? '#10B981' : '#F59E0B', fontFamily: 'Outfit' }}>
+            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600 }}>REMAINING FINANCIAL GAP</span>
+            <div style={{ fontSize: '2.2rem', fontWeight: 800, color: financialGap === 0 ? 'var(--accent-green)' : 'var(--warning-amber)', fontFamily: 'Outfit' }}>
               ₹{financialGap.toLocaleString()}
             </div>
             {financialGap === 0 && <span className="badge badge-green">✓ 100% FUNDED - ZERO GAP</span>}
@@ -85,36 +85,36 @@ export const FinancialSupportView: React.FC<Props> = ({ onOpenPlanner }) => {
         </div>
 
         {/* Live Formula Stack Visualizer */}
-        <div style={{ background: 'rgba(15, 23, 42, 0.7)', borderRadius: '16px', padding: '20px', marginBottom: '20px' }}>
-          <div style={{ fontSize: '0.82rem', color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>
+        <div style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-light)', borderRadius: '16px', padding: '20px', marginBottom: '20px' }}>
+          <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px', fontWeight: 700 }}>
             Care-to-Cost Funding Stack Breakdown:
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', textAlign: 'center' }}>
-            <div style={{ background: 'rgba(0, 180, 216, 0.15)', border: '1px solid #00B4D8', borderRadius: '12px', padding: '12px' }}>
-              <div style={{ color: '#00B4D8', fontSize: '0.78rem', fontWeight: 600 }}>1. Private Insurance</div>
-              <div style={{ color: '#FFF', fontWeight: 700, fontSize: '1.2rem', marginTop: '2px' }}>
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--primary-teal)', borderRadius: '12px', padding: '12px' }}>
+              <div style={{ color: 'var(--primary-teal-dark)', fontSize: '0.78rem', fontWeight: 700 }}>1. Private Insurance</div>
+              <div style={{ color: 'var(--text-heading)', fontWeight: 800, fontSize: '1.25rem', marginTop: '2px' }}>
                 ₹{(isInsuranceApplied ? insuranceAmount : 0).toLocaleString()}
               </div>
             </div>
 
-            <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid #10B981', borderRadius: '12px', padding: '12px' }}>
-              <div style={{ color: '#10B981', fontSize: '0.78rem', fontWeight: 600 }}>2. PM-JAY / Gov Scheme</div>
-              <div style={{ color: '#FFF', fontWeight: 700, fontSize: '1.2rem', marginTop: '2px' }}>
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--accent-green)', borderRadius: '12px', padding: '12px' }}>
+              <div style={{ color: 'var(--accent-green)', fontSize: '0.78rem', fontWeight: 700 }}>2. PM-JAY / Gov Scheme</div>
+              <div style={{ color: 'var(--text-heading)', fontWeight: 800, fontSize: '1.25rem', marginTop: '2px' }}>
                 ₹{(isSchemeApplied ? govSchemeAmount : 0).toLocaleString()}
               </div>
             </div>
 
-            <div style={{ background: 'rgba(124, 58, 237, 0.15)', border: '1px solid #7C3AED', borderRadius: '12px', padding: '12px' }}>
-              <div style={{ color: '#A78BFA', fontSize: '0.78rem', fontWeight: 600 }}>3. NGO / CSR Grants</div>
-              <div style={{ color: '#FFF', fontWeight: 700, fontSize: '1.2rem', marginTop: '2px' }}>
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--accent-purple)', borderRadius: '12px', padding: '12px' }}>
+              <div style={{ color: 'var(--accent-purple)', fontSize: '0.78rem', fontWeight: 700 }}>3. NGO / CSR Grants</div>
+              <div style={{ color: 'var(--text-heading)', fontWeight: 800, fontSize: '1.25rem', marginTop: '2px' }}>
                 ₹{ngoAmount.toLocaleString()}
               </div>
             </div>
 
-            <div style={{ background: 'rgba(245, 158, 11, 0.15)', border: '1px solid #F59E0B', borderRadius: '12px', padding: '12px' }}>
-              <div style={{ color: '#FBBF24', fontSize: '0.78rem', fontWeight: 600 }}>4. Patient Out-of-Pocket</div>
-              <div style={{ color: '#FFF', fontWeight: 700, fontSize: '1.2rem', marginTop: '2px' }}>
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--warning-amber)', borderRadius: '12px', padding: '12px' }}>
+              <div style={{ color: 'var(--warning-amber)', fontSize: '0.78rem', fontWeight: 700 }}>4. Patient Out-of-Pocket</div>
+              <div style={{ color: 'var(--text-heading)', fontWeight: 800, fontSize: '1.25rem', marginTop: '2px' }}>
                 ₹{selfPayAmount.toLocaleString()}
               </div>
             </div>
@@ -122,9 +122,9 @@ export const FinancialSupportView: React.FC<Props> = ({ onOpenPlanner }) => {
 
           {/* Interactive Self-Pay Slider */}
           <div style={{ marginTop: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#CBD5E1', fontSize: '0.85rem', marginBottom: '4px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-main)', fontSize: '0.85rem', marginBottom: '4px' }}>
               <span>Adjust Patient Out-of-Pocket Self Contribution:</span>
-              <strong style={{ color: '#FBBF24' }}>₹{selfPayAmount.toLocaleString()}</strong>
+              <strong style={{ color: 'var(--warning-amber)' }}>₹{selfPayAmount.toLocaleString()}</strong>
             </div>
             <input
               type="range"
@@ -133,7 +133,7 @@ export const FinancialSupportView: React.FC<Props> = ({ onOpenPlanner }) => {
               step="1000"
               value={selfPayAmount}
               onChange={(e) => setSelfPayAmount(Number(e.target.value))}
-              style={{ width: '100%', accentColor: '#F59E0B', cursor: 'pointer' }}
+              style={{ width: '100%', accentColor: 'var(--warning-amber)', cursor: 'pointer' }}
             />
           </div>
         </div>
@@ -150,23 +150,23 @@ export const FinancialSupportView: React.FC<Props> = ({ onOpenPlanner }) => {
         {/* Column 1: Insurance */}
         <div className="glass-panel" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-            <ShieldCheck size={22} color="#00B4D8" />
-            <h3 style={{ fontSize: '1.15rem', color: '#FFF', margin: 0 }}>Insurance Coverage Desk</h3>
+            <ShieldCheck size={22} color="var(--primary-teal-dark)" />
+            <h3 style={{ fontSize: '1.15rem', color: 'var(--text-heading)', margin: 0 }}>Insurance Coverage Desk</h3>
           </div>
 
-          <div style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '12px', borderRadius: '10px', marginBottom: '14px', fontSize: '0.85rem' }}>
-            <div style={{ color: '#FFF', fontWeight: 600 }}>Star Health Comprehensive Policy</div>
-            <div style={{ color: '#94A3B8' }}>Policy: SH-2024-998124 • Cashless Active</div>
-            <div style={{ color: '#10B981', fontWeight: 600, marginTop: '4px' }}>Sum Insured: ₹5,00,000</div>
+          <div style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-light)', padding: '12px', borderRadius: '10px', marginBottom: '14px', fontSize: '0.85rem' }}>
+            <div style={{ color: 'var(--text-heading)', fontWeight: 700 }}>Star Health Comprehensive Policy</div>
+            <div style={{ color: 'var(--text-muted)' }}>Policy: SH-2024-998124 • Cashless Active</div>
+            <div style={{ color: 'var(--accent-green)', fontWeight: 700, marginTop: '4px' }}>Sum Insured: ₹5,00,000</div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.85rem', color: '#CBD5E1', marginBottom: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--text-main)', marginBottom: '14px' }}>
             <span>Include Cashless Claim (₹60,000):</span>
             <input
               type="checkbox"
               checked={isInsuranceApplied}
               onChange={(e) => setIsInsuranceApplied(e.target.checked)}
-              style={{ width: '18px', height: '18px', accentColor: '#00B4D8' }}
+              style={{ width: '18px', height: '18px', accentColor: 'var(--primary-teal)' }}
             />
           </div>
 
@@ -178,31 +178,31 @@ export const FinancialSupportView: React.FC<Props> = ({ onOpenPlanner }) => {
         {/* Column 2: Government Schemes */}
         <div className="glass-panel" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-            <Award size={22} color="#10B981" />
-            <h3 style={{ fontSize: '1.15rem', color: '#FFF', margin: 0 }}>Government Scheme Matching</h3>
+            <Award size={22} color="var(--accent-green)" />
+            <h3 style={{ fontSize: '1.15rem', color: 'var(--text-heading)', margin: 0 }}>Government Scheme Matching</h3>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
             {schemeEligibility.map(scheme => (
-              <div key={scheme.schemeId} style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '10px 12px', borderRadius: '10px', fontSize: '0.82rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#FFF', fontWeight: 600 }}>
+              <div key={scheme.schemeId} style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-light)', padding: '10px 12px', borderRadius: '10px', fontSize: '0.82rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-heading)', fontWeight: 700 }}>
                   <span>{scheme.schemeName.substring(0, 35)}...</span>
-                  <span style={{ color: '#10B981' }}>+₹{(scheme.potentialSupportAmount/1000).toFixed(0)}k</span>
+                  <span style={{ color: 'var(--accent-green)' }}>+₹{(scheme.potentialSupportAmount/1000).toFixed(0)}k</span>
                 </div>
-                <div style={{ color: '#94A3B8', fontSize: '0.75rem', marginTop: '2px' }}>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: '2px' }}>
                   {scheme.matchingCriteria.join(' • ')}
                 </div>
               </div>
             ))}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.85rem', color: '#CBD5E1', marginBottom: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.85rem', color: 'var(--text-main)', marginBottom: '14px' }}>
             <span>Include Ayushman Bharat PM-JAY Aid:</span>
             <input
               type="checkbox"
               checked={isSchemeApplied}
               onChange={(e) => setIsSchemeApplied(e.target.checked)}
-              style={{ width: '18px', height: '18px', accentColor: '#10B981' }}
+              style={{ width: '18px', height: '18px', accentColor: 'var(--accent-green)' }}
             />
           </div>
         </div>
@@ -210,18 +210,18 @@ export const FinancialSupportView: React.FC<Props> = ({ onOpenPlanner }) => {
         {/* Column 3: NGO / CSR Assistance */}
         <div className="glass-panel" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-            <HeartHandshake size={22} color="#A78BFA" />
-            <h3 style={{ fontSize: '1.15rem', color: '#FFF', margin: 0 }}>NGO & CSR Financial Grants</h3>
+            <HeartHandshake size={22} color="var(--accent-purple)" />
+            <h3 style={{ fontSize: '1.15rem', color: 'var(--text-heading)', margin: 0 }}>NGO & CSR Financial Grants</h3>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {ngoList.map(ngo => (
-              <div key={ngo.id} style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '10px 12px', borderRadius: '10px', fontSize: '0.82rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#FFF', fontWeight: 600 }}>
+              <div key={ngo.id} style={{ background: 'var(--bg-subtle)', border: '1px solid var(--border-light)', padding: '10px 12px', borderRadius: '10px', fontSize: '0.82rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-heading)', fontWeight: 700 }}>
                   <span>{ngo.organizationName}</span>
-                  <span style={{ color: '#A78BFA' }}>Up to ₹{ngo.maxAssistanceAmount.toLocaleString()}</span>
+                  <span style={{ color: 'var(--accent-purple)' }}>Up to ₹{ngo.maxAssistanceAmount.toLocaleString()}</span>
                 </div>
-                <div style={{ color: '#94A3B8', fontSize: '0.75rem', margin: '2px 0 6px' }}>{ngo.supportType}</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', margin: '2px 0 6px' }}>{ngo.supportType}</div>
                 <button
                   onClick={() => handleApplyNGO(ngo.id)}
                   disabled={ngo.applicationStatus === 'APPLIED'}
