@@ -1,7 +1,7 @@
 import React from 'react';
 import type { UserRole } from '../../types';
 import { db } from '../../db/database';
-import { AlertCircle, RotateCcw, HeartPulse, Sun, Moon, LogIn, LogOut } from 'lucide-react';
+import { AlertCircle, RotateCcw, HeartPulse, Sun, Moon, LogIn, LogOut, QrCode } from 'lucide-react';
 
 interface Props {
   currentRole: UserRole;
@@ -14,6 +14,7 @@ interface Props {
   onOpenLogin: () => void;
   onOpenRegister: () => void;
   onLogout: () => void;
+  onSelectRole?: (role: UserRole) => void;
 }
 
 export const Header: React.FC<Props> = ({
@@ -26,7 +27,8 @@ export const Header: React.FC<Props> = ({
   onToggleTheme,
   onOpenLogin,
   onOpenRegister,
-  onLogout
+  onLogout,
+  onSelectRole
 }) => {
   const currentUser = db.getCurrentUser();
 
@@ -126,14 +128,18 @@ export const Header: React.FC<Props> = ({
             </button>
           )}
 
-          {currentRole === 'HOSPITAL_ADMIN' && (
-            <button
-              onClick={() => setActiveTab('HOSPITAL_DASHBOARD')}
-              className={`btn btn-sm ${activeTab === 'HOSPITAL_DASHBOARD' ? 'btn-green' : 'btn-secondary'}`}
-            >
-              Hospital QR Scanner & Verification
-            </button>
-          )}
+          <button
+            onClick={() => {
+              if (currentRole !== 'HOSPITAL_ADMIN' && onSelectRole) {
+                onSelectRole('HOSPITAL_ADMIN');
+              }
+              setActiveTab('HOSPITAL_DASHBOARD');
+            }}
+            className={`btn btn-sm ${activeTab === 'HOSPITAL_DASHBOARD' ? 'btn-green' : 'btn-secondary'}`}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            <QrCode size={14} /> Hospital QR Scanner & Verification
+          </button>
         </nav>
 
         {/* Controls & User Profile */}

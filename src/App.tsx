@@ -127,6 +127,7 @@ export const App: React.FC = () => {
         onOpenLogin={() => setIsLoginOpen(true)}
         onOpenRegister={() => setIsRegisterOpen(true)}
         onLogout={handleLogout}
+        onSelectRole={handleRoleChange}
       />
 
       {/* Main Body Content */}

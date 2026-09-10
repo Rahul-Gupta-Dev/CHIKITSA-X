@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../db/database';
 import type { OPDRegistration, PatientConsent } from '../../types';
-import { QrCode, Search, CheckCircle2, AlertCircle, Building2, Lock, Key } from 'lucide-react';
+import { QrCode, Search, CheckCircle2, AlertCircle, Building2, Lock, Key, Camera } from 'lucide-react';
+import { QRCameraScannerModal } from './QRCameraScannerModal';
 
 interface Props {
   onConsentRequested?: () => void;
@@ -14,6 +15,7 @@ export const HospitalAdminDashboard: React.FC<Props> = ({ onConsentRequested }) 
   const [inputRefId, setInputRefId] = useState(initialRefId);
   const [verificationResult, setVerificationResult] = useState<{ success: boolean; opd?: OPDRegistration; message: string } | null>(null);
   const [activeConsent, setActiveConsent] = useState<PatientConsent | null>(null);
+  const [isCameraScannerOpen, setIsCameraScannerOpen] = useState(false);
 
   // Sync initial inputRefId if appointments list changes
   useEffect(() => {
@@ -36,6 +38,11 @@ export const HospitalAdminDashboard: React.FC<Props> = ({ onConsentRequested }) 
     } else {
       setActiveConsent(null);
     }
+  };
+
+  const handleCameraScanSuccess = (scannedId: string) => {
+    setInputRefId(scannedId);
+    handleVerify(scannedId);
   };
 
   const handleRequestConsentClick = () => {
@@ -82,12 +89,24 @@ export const HospitalAdminDashboard: React.FC<Props> = ({ onConsentRequested }) 
 
       {/* Main Verification Card */}
       <div className="glass-panel" style={{ padding: '28px', marginBottom: '28px' }}>
-        <h3 style={{ fontSize: '1.25rem', color: 'var(--text-heading)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <QrCode size={22} color="var(--accent-green)" /> Scan Patient QR / Enter Reference ID
-        </h3>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '20px' }}>
-          Enter patient's appointment reference ID or scan digital visit pass to verify check-in
-        </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '12px' }}>
+          <div>
+            <h3 style={{ fontSize: '1.25rem', color: 'var(--text-heading)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <QrCode size={22} color="var(--accent-green)" /> Scan Patient QR / Enter Reference ID
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: '4px 0 0' }}>
+              Scan patient digital visit pass QR using web camera or enter appointment reference ID
+            </p>
+          </div>
+
+          <button
+            onClick={() => setIsCameraScannerOpen(true)}
+            className="btn btn-primary"
+            style={{ padding: '10px 18px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.95rem' }}
+          >
+            <Camera size={20} /> Open Camera QR Scanner
+          </button>
+        </div>
 
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '16px' }}>
           <input
@@ -206,6 +225,13 @@ export const HospitalAdminDashboard: React.FC<Props> = ({ onConsentRequested }) 
           ))}
         </div>
       </div>
+
+      {/* Camera QR Scanner Modal */}
+      <QRCameraScannerModal
+        isOpen={isCameraScannerOpen}
+        onClose={() => setIsCameraScannerOpen(false)}
+        onScanSuccess={handleCameraScanSuccess}
+      />
     </div>
   );
 };
