@@ -22,23 +22,44 @@ export const mockVoiceService = {
     const lower = transcriptText.toLowerCase();
     const symptoms: string[] = [];
 
-    if (lower.includes('chest') || lower.includes('pain') || lower.includes('discomfort')) symptoms.push('Chest Discomfort');
+    if (lower.includes('chest') || lower.includes('discomfort') || lower.includes('pressure')) symptoms.push('Chest Discomfort');
     if (lower.includes('breath') || lower.includes('breathing') || lower.includes('shortness')) symptoms.push('Shortness of Breath');
-    if (lower.includes('fatigue') || lower.includes('tired') || lower.includes('weak')) symptoms.push('Fatigue on Walking');
-    if (lower.includes('headache') || lower.includes('dizzy')) symptoms.push('Dizziness');
-    if (lower.includes('fever') || lower.includes('temperature')) symptoms.push('Fever');
+    if (lower.includes('fatigue') || lower.includes('tired') || lower.includes('weak')) symptoms.push('Fatigue');
+    if (lower.includes('headache') || lower.includes('head') || lower.includes('migraine')) symptoms.push('Headache');
+    if (lower.includes('dizzy') || lower.includes('dizziness')) symptoms.push('Dizziness');
+    if (lower.includes('fever') || lower.includes('temperature') || lower.includes('chills')) symptoms.push('Fever');
+    if (lower.includes('throat') || lower.includes('sore') || lower.includes('swallow')) symptoms.push('Sore Throat');
+    if (lower.includes('cough') || lower.includes('cold') || lower.includes('sneeze')) symptoms.push('Cough & Cold');
+    if (lower.includes('stomach') || lower.includes('abdominal') || lower.includes('nausea') || lower.includes('vomit') || lower.includes('belly')) symptoms.push('Abdominal Discomfort');
+    if (lower.includes('back') || lower.includes('joint') || lower.includes('muscle') || lower.includes('leg')) symptoms.push('Joint / Muscle Pain');
 
-    if (symptoms.length === 0) symptoms.push('Reported Malaise', 'Unspecified Chest Pressure');
+    if (symptoms.length === 0) {
+      symptoms.push(`Symptom: ${transcriptText.trim().substring(0, 35)}`);
+    }
 
     let severity: 'Mild' | 'Moderate' | 'Severe' | 'Critical' = 'Moderate';
     let isEmergency = false;
 
-    if (lower.includes('severe') || lower.includes('intense') || lower.includes('radiating') || lower.includes('arm')) {
+    if (lower.includes('severe') || lower.includes('intense') || lower.includes('radiating') || lower.includes('unbearable') || lower.includes('critical')) {
       severity = 'Severe';
-      isEmergency = true;
-    } else if (lower.includes('mild')) {
+      if (lower.includes('chest') || lower.includes('breath') || lower.includes('heart')) {
+        isEmergency = true;
+      }
+    } else if (lower.includes('mild') || lower.includes('slight') || lower.includes('minor')) {
       severity = 'Mild';
     }
+
+    let bodySystem = 'General / Constitutional';
+    if (symptoms.some(s => s.includes('Chest') || s.includes('Breath'))) bodySystem = 'Cardiovascular / Thoracic';
+    else if (symptoms.some(s => s.includes('Throat') || s.includes('Cough'))) bodySystem = 'Respiratory / ENT';
+    else if (symptoms.some(s => s.includes('Abdominal'))) bodySystem = 'Gastrointestinal';
+    else if (symptoms.some(s => s.includes('Headache') || s.includes('Dizziness'))) bodySystem = 'Neurological';
+
+    let duration = '12 Hours';
+    if (lower.includes('yesterday')) duration = '24 Hours';
+    else if (lower.includes('2 days') || lower.includes('two days')) duration = '2 Days';
+    else if (lower.includes('3 days') || lower.includes('three days')) duration = '3 Days';
+    else if (lower.includes('week')) duration = '1 Week';
 
     const intake: SymptomIntake = {
       id: `intake-${Date.now()}`,
@@ -46,9 +67,9 @@ export const mockVoiceService = {
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       rawTranscript: transcriptText,
       extractedSymptoms: symptoms,
-      duration: lower.includes('yesterday') ? '24 Hours' : lower.includes('days') ? '3 Days' : '12 Hours',
+      duration,
       severity,
-      affectedBodyPart: 'Cardiovascular / Thoracic',
+      affectedBodyPart: bodySystem,
       isEmergencyAlert: isEmergency
     };
 
@@ -74,7 +95,7 @@ export const mockOCRService = {
       ocrData = {
         doctorName: 'Dr. S. K. Mehta (MD Med)',
         hospitalName: 'Ruby General Clinic',
-        previousCondition: 'Hypertension & Type 2 Diabetes',
+        previousCondition: 'Extracted from uploaded ' + fileName,
         medicinesExtracted: ['Metformin 500mg (1-0-1)', 'Telmisartan 40mg (1-0-0)', 'Atorvastatin 10mg (0-0-1)'],
         allergiesExtracted: ['Penicillin']
       };
@@ -83,22 +104,15 @@ export const mockOCRService = {
         labResults: [
           { testName: 'HbA1c (Glycated Hemoglobin)', value: '7.4', unit: '%', range: '< 5.7%' },
           { testName: 'Fasting Blood Glucose', value: '142', unit: 'mg/dL', range: '70 - 100 mg/dL' },
-          { testName: 'Serum Creatinine', value: '0.95', unit: 'mg/dL', range: '0.7 - 1.2 mg/dL' },
-          { testName: 'Total Cholesterol', value: '215', unit: 'mg/dL', range: '< 200 mg/dL' }
+          { testName: 'Serum Creatinine', value: '0.95', unit: 'mg/dL', range: '0.7 - 1.2 mg/dL' }
         ],
-        diagnosisExtracted: 'Mild Dyslipidemia & Sub-optimal Glycemic Control'
-      };
-    } else if (category === 'Discharge Summary') {
-      ocrData = {
-        previousCondition: 'Observation for Chest Pain (Non-cardiac 2023)',
-        medicinesExtracted: ['Aspirin 75mg OD', 'Clopidogrel 75mg OD'],
-        diagnosisExtracted: 'Stable Angina Evaluation Recommended'
+        diagnosisExtracted: 'Extracted Lab Metrics from ' + fileName
       };
     } else {
       ocrData = {
-        previousCondition: 'Routine Health Checkup',
-        medicinesExtracted: ['Vitamin D3 60k IU'],
-        diagnosisExtracted: 'Mild Vitamin D Deficiency'
+        previousCondition: 'Extracted Record Summary',
+        medicinesExtracted: ['Prescribed Medication from ' + fileName],
+        diagnosisExtracted: 'Clinical observations extracted from file ' + fileName
       };
     }
 
@@ -130,28 +144,37 @@ export const mockTriageService = {
     const latestIntake = intakes.length > 0 ? intakes[0] : null;
 
     const hasChestSymptoms = profile.symptoms.some(s => s.toLowerCase().includes('chest'));
+    const hasThroatFever = profile.symptoms.some(s => s.toLowerCase().includes('throat') || s.toLowerCase().includes('fever') || s.toLowerCase().includes('cough'));
     const isSevere = latestIntake?.severity === 'Severe' || latestIntake?.severity === 'Critical';
 
     let riskLevel: 'LOW' | 'MODERATE' | 'HIGH' = 'MODERATE';
     let urgency: TriageResult['urgency'] = 'Prompt Consultation (24h)';
+    let specialty = 'Cardiology & Internal Medicine';
     const reasoning: string[] = [];
 
     if (hasChestSymptoms && isSevere) {
       riskLevel = 'HIGH';
       urgency = 'Urgent Evaluation (Immediate)';
-      reasoning.push('Reported severe chest tightness combined with acute onset shortness of breath');
-      reasoning.push('Pre-existing risk factors present: Type 2 Diabetes Mellitus & Mild Hypertension');
-      reasoning.push('Recommendation: Seek immediate cardiac evaluation or emergency care');
+      specialty = 'Cardiology / Emergency Care';
+      reasoning.push('Reported severe chest discomfort / cardiovascular pressure');
+      reasoning.push('Recommendation: Seek immediate cardiac evaluation or emergency trauma care');
     } else if (hasChestSymptoms) {
       riskLevel = 'MODERATE';
       urgency = 'Prompt Consultation (24h)';
+      specialty = 'Cardiology & Internal Medicine';
       reasoning.push('Cardiovascular chest discomfort noted with moderate duration');
-      reasoning.push('Patient is on Metformin & Telmisartan (Diabetic + Hypertensive history)');
       reasoning.push('Elective Cardiology consultation advised within 24 hours');
+    } else if (hasThroatFever) {
+      riskLevel = 'LOW';
+      urgency = 'Routine Consultation';
+      specialty = 'General Medicine / ENT';
+      reasoning.push(`Active symptoms evaluated: ${profile.symptoms.join(', ')}`);
+      reasoning.push('No acute cardiac red flags detected. Routine Outpatient OPD registration recommended.');
     } else {
       riskLevel = 'LOW';
       urgency = 'Routine Consultation';
-      reasoning.push('Mild constitutional symptoms without active signs of cardiac compromise');
+      specialty = 'General Outpatient Medicine';
+      reasoning.push(`Extracted symptoms evaluated: ${profile.symptoms.join(', ') || 'Mild Malaise'}`);
       reasoning.push('Routine Outpatient OPD booking suitable');
     }
 
@@ -163,10 +186,10 @@ export const mockTriageService = {
       urgency,
       symptomsConsidered: profile.symptoms,
       clinicalReasoning: reasoning,
-      recommendedSpecialty: 'Cardiology & Internal Medicine',
+      recommendedSpecialty: specialty,
       recommendedNextStep: urgency === 'Urgent Evaluation (Immediate)'
         ? 'Proceed to nearest Emergency Trauma center or activate Emergency Pathway'
-        : 'Compare and select recommended Cardiology OPD Hospital for registration',
+        : `Compare and select recommended ${specialty} OPD Hospital for registration`,
       isEmergencyTriggered: riskLevel === 'HIGH'
     };
 
@@ -174,6 +197,7 @@ export const mockTriageService = {
     return triage;
   }
 };
+
 
 /**
  * 4. Smart Hospital Recommendation Engine (CHIKITSAX Care Score)

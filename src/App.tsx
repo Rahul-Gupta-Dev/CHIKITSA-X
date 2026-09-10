@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { UserRole, Hospital, OPDRegistration } from './types';
 import { db } from './db/database';
 
 import { RoleSwitcherBar } from './components/layout/RoleSwitcherBar';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
+
+import { LoginModal } from './components/auth/LoginModal';
+import { RegisterModal } from './components/auth/RegisterModal';
 
 import { EmergencyModal } from './components/common/EmergencyModal';
 import { LandingPage } from './components/landing/LandingPage';
@@ -24,8 +27,27 @@ import { DoctorDashboard } from './components/doctor/DoctorDashboard';
 import { HospitalAdminDashboard } from './components/hospital/HospitalAdminDashboard';
 
 export const App: React.FC = () => {
-  const [currentRole, setCurrentRole] = useState<UserRole>(db.getCurrentUser().role);
+  // Theme State with localStorage persistence (Default: LIGHT)
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('chikitsax_theme');
+    return (saved === 'dark' || saved === 'light') ? saved : 'light';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('chikitsax_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+  };
+
+  // Auth & Roles State
+  const [currentRole, setCurrentRole] = useState<UserRole>(() => db.getCurrentUser().role);
   const [activeTab, setActiveTab] = useState<string>('LANDING');
+
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
   // Modals & Navigation State
   const [isEmergencyOpen, setIsEmergencyOpen] = useState(false);
@@ -44,9 +66,27 @@ export const App: React.FC = () => {
 
   const handleRoleChange = (role: UserRole) => {
     setCurrentRole(role);
+    const users = db.getDemoUsers();
+    const matched = users.find(u => u.role === role) || users[0];
+    db.setCurrentUser(matched);
+
     if (role === 'PATIENT') setActiveTab('DASHBOARD');
     else if (role === 'DOCTOR') setActiveTab('DOCTOR_DASHBOARD');
     else if (role === 'HOSPITAL_ADMIN') setActiveTab('HOSPITAL_DASHBOARD');
+  };
+
+  const handleLoginSuccess = (role: UserRole) => {
+    setCurrentRole(role);
+    if (role === 'PATIENT') setActiveTab('DASHBOARD');
+    else if (role === 'DOCTOR') setActiveTab('DOCTOR_DASHBOARD');
+    else if (role === 'HOSPITAL_ADMIN') setActiveTab('HOSPITAL_DASHBOARD');
+  };
+
+  const handleLogout = () => {
+    db.resetDemoState();
+    setCurrentRole('PATIENT');
+    setActiveTab('LANDING');
+    window.location.reload();
   };
 
   const handleSelectHospital = (hosp: Hospital) => {
@@ -57,7 +97,7 @@ export const App: React.FC = () => {
   const handleBookingConfirmed = (opd: OPDRegistration) => {
     setActiveOPDPass(opd);
     setActiveTab('DASHBOARD');
-    alert(`Appointment Confirmed! Unique Reference ID: ${opd.referenceId}`);
+    alert(`OPD Appointment Confirmed! Unique Reference ID: ${opd.referenceId}`);
   };
 
   const handleResetDemo = () => {
@@ -68,23 +108,28 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Top Demo Bar for Hackathon Judges */}
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-main)', color: 'var(--text-main)' }}>
+      {/* Top Convenience Bar for Hackathon Judges */}
       <RoleSwitcherBar
         currentRole={currentRole}
         onRoleChange={handleRoleChange}
       />
 
-      {/* Main Navbar Header */}
+      {/* Main Header with Theme Switcher & Auth Triggers */}
       <Header
         currentRole={currentRole}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenEmergency={() => setIsEmergencyOpen(true)}
         onResetDemo={handleResetDemo}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        onOpenLogin={() => setIsLoginOpen(true)}
+        onOpenRegister={() => setIsRegisterOpen(true)}
+        onLogout={handleLogout}
       />
 
-      {/* Body Content Router */}
+      {/* Main Body Content */}
       <main style={{ flex: 1, padding: '20px', maxWidth: '1280px', margin: '0 auto', width: '100%' }}>
         {activeTab === 'LANDING' && (
           <LandingPage
@@ -114,7 +159,7 @@ export const App: React.FC = () => {
               <HospitalPassQR
                 opd={activeOPDPass}
                 onSimulateHospitalVerify={() => {
-                  db.verifyQRPass(activeOPDPass.referenceId, 'Staff Reception Desk');
+                  db.verifyQRPass(activeOPDPass.referenceId, 'Reception Desk Staff');
                   alert(`Appointment ${activeOPDPass.referenceId} verified successfully!`);
                   window.location.reload();
                 }}
@@ -167,6 +212,20 @@ export const App: React.FC = () => {
       </main>
 
       {/* Global Modals */}
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+        onOpenRegister={() => setIsRegisterOpen(true)}
+      />
+
+      <RegisterModal
+        isOpen={isRegisterOpen}
+        onClose={() => setIsRegisterOpen(false)}
+        onRegisterSuccess={handleLoginSuccess}
+        onOpenLogin={() => setIsLoginOpen(true)}
+      />
+
       <EmergencyModal
         isOpen={isEmergencyOpen}
         onClose={() => setIsEmergencyOpen(false)}
