@@ -1,0 +1,211 @@
+import React, { useState, useEffect } from 'react';
+import { db } from '../../db/database';
+import type { OPDRegistration, PatientConsent } from '../../types';
+import { QrCode, Search, CheckCircle2, AlertCircle, Building2, Lock, Key } from 'lucide-react';
+
+interface Props {
+  onConsentRequested?: () => void;
+}
+
+export const HospitalAdminDashboard: React.FC<Props> = ({ onConsentRequested }) => {
+  const appointments = db.getOPDRegistrations();
+  const initialRefId = appointments.length > 0 ? appointments[0].referenceId : 'CHX-2026-8A92F';
+
+  const [inputRefId, setInputRefId] = useState(initialRefId);
+  const [verificationResult, setVerificationResult] = useState<{ success: boolean; opd?: OPDRegistration; message: string } | null>(null);
+  const [activeConsent, setActiveConsent] = useState<PatientConsent | null>(null);
+
+  // Sync initial inputRefId if appointments list changes
+  useEffect(() => {
+    if (appointments.length > 0 && !verificationResult) {
+      setInputRefId(appointments[0].referenceId);
+    }
+  }, [appointments.length]);
+
+  const handleVerify = (targetId?: string) => {
+    const queryId = (targetId || inputRefId).trim();
+    if (!queryId) return;
+
+    const res = db.verifyQRPass(queryId, 'Reception Desk Staff (Anil)');
+    setVerificationResult(res);
+
+    if (res.success && res.opd) {
+      const consents = db.getConsents();
+      const existing = consents.find(c => c.patientId === res.opd?.patientId && c.hospitalId === res.opd?.hospitalId);
+      if (existing) setActiveConsent(existing);
+    } else {
+      setActiveConsent(null);
+    }
+  };
+
+  const handleRequestConsentClick = () => {
+    if (verificationResult?.opd) {
+      const c = db.requestConsent(
+        verificationResult.opd.patientId,
+        verificationResult.opd.hospitalId,
+        verificationResult.opd.hospitalName,
+        verificationResult.opd.doctorId,
+        verificationResult.opd.doctorName
+      );
+      setActiveConsent(c);
+      if (onConsentRequested) onConsentRequested();
+    }
+  };
+
+  return (
+    <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '20px' }}>
+      {/* Header Banner */}
+      <div style={{
+        background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+        borderRadius: '20px',
+        padding: '24px 30px',
+        marginBottom: '24px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        color: '#FFF',
+        boxShadow: '0 8px 24px rgba(16, 185, 129, 0.3)'
+      }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <Building2 size={24} />
+            <h2 style={{ fontSize: '1.6rem', color: '#FFF', margin: 0 }}>Hospital Admin & Staff Verification Desk</h2>
+          </div>
+          <p style={{ opacity: 0.9, fontSize: '0.9rem', margin: 0 }}>
+            CarePlus Super Specialty Hospital • Check-in Scanner & Medical Consent Management
+          </p>
+        </div>
+        <span className="badge badge-green" style={{ background: '#FFF', color: '#059669', fontSize: '0.82rem' }}>
+          STAFF LOGGED IN
+        </span>
+      </div>
+
+      {/* Main Verification Card */}
+      <div className="glass-panel" style={{ padding: '28px', marginBottom: '28px' }}>
+        <h3 style={{ fontSize: '1.25rem', color: '#FFF', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <QrCode size={22} color="#10B981" /> Scan Patient QR / Enter Reference ID
+        </h3>
+        <p style={{ color: '#94A3B8', fontSize: '0.85rem', marginBottom: '20px' }}>
+          Enter patient's appointment reference ID or scan digital visit pass to verify check-in
+        </p>
+
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '16px' }}>
+          <input
+            type="text"
+            value={inputRefId}
+            onChange={(e) => setInputRefId(e.target.value)}
+            placeholder="Enter Reference ID e.g. CHX-2026-8A92F"
+            className="form-control"
+            style={{ flex: 1, minWidth: '260px', fontSize: '1.05rem', fontWeight: 600, letterSpacing: '0.05em' }}
+          />
+          <button onClick={() => handleVerify()} className="btn btn-green" style={{ padding: '12px 24px' }}>
+            <Search size={18} /> Verify Appointment
+          </button>
+        </div>
+
+        {/* Quick Active Appointments List */}
+        {appointments.length > 0 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', fontSize: '0.8rem', color: '#94A3B8', marginBottom: '8px' }}>
+            <span>Active Hospital Appointments:</span>
+            {appointments.map(a => (
+              <button
+                key={a.id}
+                onClick={() => {
+                  setInputRefId(a.referenceId);
+                  handleVerify(a.referenceId);
+                }}
+                className="btn btn-secondary btn-sm"
+                style={{ fontSize: '0.78rem', padding: '4px 10px', border: inputRefId === a.referenceId ? '1px solid #10B981' : '1px solid rgba(255,255,255,0.1)' }}
+              >
+                {a.referenceId} ({a.patientName})
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Verification Result Card */}
+        {verificationResult && (
+          <div style={{ marginTop: '24px' }}>
+            {verificationResult.success && verificationResult.opd ? (
+              <div style={{
+                background: 'rgba(16, 185, 129, 0.15)',
+                border: '1px solid #10B981',
+                borderRadius: '16px',
+                padding: '20px'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <CheckCircle2 size={28} color="#10B981" />
+                    <div>
+                      <div style={{ color: '#10B981', fontWeight: 700, fontSize: '1.1rem' }}>✓ APPOINTMENT VERIFIED SUCCESSFUL</div>
+                      <div style={{ color: '#CBD5E1', fontSize: '0.85rem' }}>Staff Verification & Patient Check-in Complete</div>
+                    </div>
+                  </div>
+                  <span className="badge badge-green">CHECK-IN VERIFIED</span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', fontSize: '0.9rem', color: '#FFF', margin: '16px 0' }}>
+                  <div>
+                    <span style={{ color: '#94A3B8', fontSize: '0.8rem' }}>Reference ID:</span>
+                    <div style={{ fontWeight: 700, color: '#00B4D8' }}>{verificationResult.opd.referenceId}</div>
+                  </div>
+                  <div>
+                    <span style={{ color: '#94A3B8', fontSize: '0.8rem' }}>Patient Name:</span>
+                    <div style={{ fontWeight: 600 }}>{verificationResult.opd.patientName}</div>
+                  </div>
+                  <div>
+                    <span style={{ color: '#94A3B8', fontSize: '0.8rem' }}>Department & Doctor:</span>
+                    <div style={{ fontWeight: 600 }}>{verificationResult.opd.doctorName} ({verificationResult.opd.department})</div>
+                  </div>
+                  <div>
+                    <span style={{ color: '#94A3B8', fontSize: '0.8rem' }}>Date & Time Slot:</span>
+                    <div style={{ fontWeight: 600 }}>{verificationResult.opd.appointmentDate} at {verificationResult.opd.appointmentTime}</div>
+                  </div>
+                </div>
+
+                {/* Patient Consent Status Protocol */}
+                <div style={{ background: 'rgba(15, 23, 42, 0.7)', borderRadius: '12px', padding: '16px', marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#A78BFA', fontWeight: 600, fontSize: '0.9rem' }}>
+                      <Lock size={16} /> Patient Medical Record Access Consent Status:
+                    </div>
+                    <div style={{ color: activeConsent?.status === 'GRANTED' ? '#10B981' : '#F59E0B', fontSize: '0.85rem', marginTop: '2px' }}>
+                      {activeConsent?.status === 'GRANTED'
+                        ? '✓ GRANTED BY PATIENT: Doctor unlocked clinical profile'
+                        : activeConsent?.status === 'PENDING'
+                        ? '⏳ PENDING PATIENT APPROVAL: Request sent to patient'
+                        : '🔒 NOT REQUESTED YET'}
+                    </div>
+                  </div>
+
+                  {activeConsent?.status !== 'GRANTED' && (
+                    <button onClick={handleRequestConsentClick} className="btn btn-purple btn-sm">
+                      <Key size={14} /> Request Patient Medical Access Consent
+                    </button>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid #EF4444', borderRadius: '12px', padding: '16px', color: '#F87171', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <AlertCircle size={20} /> {verificationResult.message}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Audit Log Panel */}
+      <div className="glass-panel" style={{ padding: '24px' }}>
+        <h4 style={{ color: '#FFF', fontSize: '1.1rem', marginBottom: '14px' }}>Recent Hospital Check-in Audit Logs</h4>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.82rem' }}>
+          {db.getAuditLogs().slice(0, 5).map(log => (
+            <div key={log.id} style={{ background: 'rgba(15, 23, 42, 0.5)', padding: '10px 14px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', color: '#CBD5E1' }}>
+              <span>[{log.timestamp}] <strong>{log.action}</strong>: {log.details}</span>
+              <span className="badge badge-teal">{log.actorRole}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
