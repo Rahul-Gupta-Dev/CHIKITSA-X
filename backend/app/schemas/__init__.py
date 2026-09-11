@@ -193,33 +193,54 @@ class DoctorOut(BaseModel):
 class OPDCreateRequest(BaseModel):
     patient_id: str
     hospital_id: str
-    department: str
     doctor_id: str
-    date: str
-    time: str
+    department: str
+    appointment_date: Optional[str] = None
+    appointment_time: Optional[str] = None
+    date: Optional[str] = None
+    time: Optional[str] = None
 
 class OPDResponse(BaseModel):
     id: str
+    appointment_id: Optional[str] = None
     reference_id: str
     patient_id: str
-    patient_name: str
-    patient_phone: str
+    patient_name: Optional[str] = None
+    patient_phone: Optional[str] = None
     hospital_id: str
-    hospital_name: str
+    hospital_name: Optional[str] = None
+    hospital: Optional[str] = None
     department: str
     doctor_id: str
-    doctor_name: str
+    doctor_name: Optional[str] = None
+    doctor: Optional[str] = None
     appointment_date: str
     appointment_time: str
-    consultation_fee: int
+    consultation_fee: Optional[int] = 800
     status: str
-    qr_token: str
+    qr_token: Optional[str] = None
 
 # QR Verification Schemas
+class QRGenerateRequest(BaseModel):
+    appointment_id: str
+
+class QRGenerateResponse(BaseModel):
+    reference_id: str
+    secure_token: str
+    qr_payload: str
+    id: Optional[str] = None
+    expires_at: Optional[str] = None
+
 class QRVerifyResponse(BaseModel):
     verified: bool
-    message: str
+    message: Optional[str] = None
     reference_id: Optional[str] = None
+    hospital: Optional[str] = None
+    department: Optional[str] = None
+    doctor: Optional[str] = None
+    appointment_date: Optional[str] = None
+    appointment_time: Optional[str] = None
+    status: Optional[str] = None
     appointment: Optional[Dict[str, Any]] = None
 
 class HospitalVerifyRequest(BaseModel):

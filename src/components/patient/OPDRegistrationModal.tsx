@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { mockOPDService } from '../../services/apiServices';
+import { opdService } from '../../services/apiServices';
 import type { Hospital, OPDRegistration } from '../../types';
 import { db } from '../../db/database';
 import { X } from 'lucide-react';
@@ -31,7 +31,7 @@ export const OPDRegistrationModal: React.FC<Props> = ({
   const handleConfirmBooking = async () => {
     setIsSubmitting(true);
     try {
-      const opd = await mockOPDService.bookAppointment(
+      const opd = await opdService.bookAppointment(
         selectedHospital.id,
         selectedHospital.name,
         department,

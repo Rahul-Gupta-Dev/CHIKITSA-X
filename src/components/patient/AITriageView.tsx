@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { mockTriageService } from '../../services/apiServices';
+import { triageService } from '../../services/apiServices';
 import type { TriageResult } from '../../types';
 import { db } from '../../db/database';
 import { DisclaimerBanner } from '../common/DisclaimerBanner';
@@ -22,7 +22,7 @@ export const AITriageView: React.FC<Props> = ({
   const handleRunTriage = async () => {
     setIsLoading(true);
     try {
-      const result = await mockTriageService.runClinicalTriage();
+      const result = await triageService.runClinicalTriage();
       setTriage(result);
       onTriageComplete(result);
     } finally {

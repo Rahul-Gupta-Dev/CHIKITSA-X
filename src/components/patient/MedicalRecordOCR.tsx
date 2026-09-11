@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { mockOCRService } from '../../services/apiServices';
+import { ocrService } from '../../services/apiServices';
 import type { MedicalRecord } from '../../types';
 import { DisclaimerBanner } from '../common/DisclaimerBanner';
 import { FileText, Upload, CheckCircle2, Edit3, Plus, Trash2, X, Sparkles, File, AlertCircle } from 'lucide-react';
@@ -68,7 +68,7 @@ export const MedicalRecordOCR: React.FC<Props> = ({ isOpen, onClose, onRecordSav
 
     setStep('PROCESSING');
     try {
-      const rec = await mockOCRService.processUploadedFile(selectedFile.name, fileType, category);
+      const rec = await ocrService.processUploadedFile(selectedFile.name, fileType, category, selectedFile);
       setExtractedRecord(rec);
 
       // Populate editable fields
@@ -258,8 +258,13 @@ export const MedicalRecordOCR: React.FC<Props> = ({ isOpen, onClose, onRecordSav
         {step === 'REVIEW' && extractedRecord && (
           <div>
             <div style={{ background: 'rgba(0, 180, 216, 0.1)', border: '1px solid rgba(0, 180, 216, 0.3)', borderRadius: '12px', padding: '14px', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary-teal-dark)', fontWeight: 700, fontSize: '0.95rem', marginBottom: '4px' }}>
-                <CheckCircle2 size={18} /> Extracted Document Summary ({category})
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '4px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary-teal-dark)', fontWeight: 700, fontSize: '0.95rem' }}>
+                  <CheckCircle2 size={18} /> Extracted Document Summary ({category})
+                </div>
+                <span className="badge badge-amber" style={{ fontSize: '0.75rem' }}>
+                  🏷️ Development OCR Adapter
+                </span>
               </div>
               <p style={{ color: 'var(--text-main)', fontSize: '0.82rem', margin: 0 }}>
                 File: <strong>{extractedRecord.fileName}</strong> • Doctor/Clinic: {extractedRecord.ocrExtractedData.doctorName || 'General Clinic'}

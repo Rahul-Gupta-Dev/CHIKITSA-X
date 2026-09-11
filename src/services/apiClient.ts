@@ -44,6 +44,19 @@ export class APIClient {
     return response.json();
   }
 
+  public async postFormData<T>(endpoint: string, formData: FormData): Promise<T> {
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`API Error ${response.status}: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
   public async put<T>(endpoint: string, data?: any): Promise<T> {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'PUT',

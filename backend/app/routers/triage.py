@@ -16,17 +16,26 @@ def perform_triage(payload: TriageRequest, db: Session = Depends(get_db)):
         (PatientModel.id == payload.patient_id) | (PatientModel.user_id == payload.patient_id)
     ).first()
 
-    symptoms = patient.symptoms if patient else ["Chest Tightness", "Shortness of Breath"]
-    history = patient.medical_history if patient else ["Hypertension"]
+    symptoms = patient.symptoms if (patient and patient.symptoms) else ["Chest Tightness", "Shortness of Breath"]
+    history = patient.medical_history if (patient and patient.medical_history) else ["Hypertension"]
 
     is_emergency = False
+    severity = "Moderate"
+
+    intake = None
     if payload.intake_id:
         intake = db.query(IntakeSessionModel).filter(IntakeSessionModel.id == payload.intake_id).first()
-        if intake:
-            symptoms = intake.extracted_symptoms
-            is_emergency = intake.is_emergency_alert
+    else:
+        intake = db.query(IntakeSessionModel).filter(
+            IntakeSessionModel.patient_id == payload.patient_id
+        ).order_by(IntakeSessionModel.timestamp.desc()).first()
 
-    eval_result = TriageService.evaluate_triage(symptoms, history, is_emergency)
+    if intake:
+        symptoms = intake.extracted_symptoms or symptoms
+        is_emergency = intake.is_emergency_alert
+        severity = intake.severity
+
+    eval_result = TriageService.evaluate_triage(symptoms, history, is_emergency, severity)
 
     triage_id = f"trg-{int(datetime.datetime.utcnow().timestamp()*1000)}"
     triage = TriageResultModel(
@@ -58,5 +67,5 @@ def perform_triage(payload: TriageRequest, db: Session = Depends(get_db)):
         "reasoning": triage.clinical_reasoning,
         "next_action": triage.recommended_next_step,
         "is_emergency_triggered": triage.is_emergency_triggered,
-        "disclaimer": "AI-assisted triage only. Professional medical evaluation by a licensed physician is required."
+        "disclaimer": "AI-assisted triage decision support only. Does not provide a disease diagnosis. Final clinical decisions are made by qualified healthcare professionals."
     }

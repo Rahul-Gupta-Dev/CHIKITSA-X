@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { mockHospitalService } from '../../services/apiServices';
+import React, { useState, useEffect } from 'react';
+import { hospitalService, mockHospitalService } from '../../services/apiServices';
 import type { Hospital } from '../../types';
 import { Award, MapPin, Info, ArrowRight, Layers, Activity } from 'lucide-react';
 
@@ -11,8 +11,17 @@ interface Props {
 export const HospitalFinder: React.FC<Props> = ({ onSelectHospital, onOpenCompare }) => {
   const [filter, setFilter] = useState<'CARE_SCORE' | 'LOWEST_COST' | 'NEAREST'>('CARE_SCORE');
   const [selectedWhyHosp, setSelectedWhyHosp] = useState<Hospital | null>(null);
+  const [hospitals, setHospitals] = useState<Hospital[]>(() => mockHospitalService.getRankedHospitals(filter));
 
-  const hospitals = mockHospitalService.getRankedHospitals(filter);
+  useEffect(() => {
+    let isMounted = true;
+    hospitalService.recommendHospitals(filter, 'usr-patient-1').then((res) => {
+      if (isMounted && res) {
+        setHospitals(res);
+      }
+    });
+    return () => { isMounted = false; };
+  }, [filter]);
 
   return (
     <div style={{ padding: '10px 0' }}>

@@ -126,6 +126,19 @@ def get_unified_patient_profile(patient_id: str, db: Session = Depends(get_db)):
 
     profile_dict = patient_to_dict(patient)
     profile_dict["previousRecordsCount"] = len(records)
+    profile_dict["medicalRecords"] = [
+        {
+            "id": r.id,
+            "patientId": r.patient_id,
+            "fileName": r.file_name,
+            "fileType": r.file_type,
+            "category": r.category,
+            "uploadDate": r.upload_date,
+            "ocrExtractedData": r.ocr_extracted_data,
+            "isVerifiedByPatient": r.is_verified_by_patient
+        }
+        for r in records
+    ]
     profile_dict["latestIntake"] = {
         "id": latest_intake.id,
         "transcript": latest_intake.raw_transcript,

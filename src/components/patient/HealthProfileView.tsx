@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { db } from '../../db/database';
+import { patientService } from '../../services/apiServices';
 import type { PatientProfile } from '../../types';
 import { DisclaimerBanner } from '../common/DisclaimerBanner';
 import { Pill, Heart, Phone, MapPin, Edit3, CheckCircle2 } from 'lucide-react';
@@ -12,8 +13,21 @@ export const HealthProfileView: React.FC = () => {
   const [age, setAge] = useState(profile.age);
   const [bloodGroup, setBloodGroup] = useState(profile.bloodGroup);
 
-  const handleSave = () => {
-    const updated = db.updatePatientProfile({ fullName, age: Number(age), bloodGroup });
+  useEffect(() => {
+    let isMounted = true;
+    patientService.getProfile('usr-patient-1').then((res) => {
+      if (isMounted && res) {
+        setProfile(res);
+        setFullName(res.fullName);
+        setAge(res.age);
+        setBloodGroup(res.bloodGroup);
+      }
+    });
+    return () => { isMounted = false; };
+  }, []);
+
+  const handleSave = async () => {
+    const updated = await patientService.updateProfile({ fullName, age: Number(age), bloodGroup }, 'usr-patient-1');
     setProfile(updated);
     setIsEditing(false);
   };

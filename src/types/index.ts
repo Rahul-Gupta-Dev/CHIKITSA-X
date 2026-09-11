@@ -113,6 +113,8 @@ export interface Hospital {
   availabilityScore: number; // 0 to 100
   supportServicesScore: number; // 0 to 100
   chikitsaxCareScore: number; // Calculated total
+  care_score?: number;
+  score_breakdown?: Record<string, number>;
   estimatedCostRange: {
     min: number;
     max: number;

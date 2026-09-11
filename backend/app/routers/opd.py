@@ -17,6 +17,28 @@ def generate_ref_id() -> str:
     chars = "".join(random.choices(string.ascii_uppercase + string.digits, k=5))
     return f"CHX-2026-{chars}"
 
+def opd_to_dict(opd: OPDAppointmentModel) -> dict:
+    return {
+        "id": opd.id,
+        "appointment_id": opd.id,
+        "reference_id": opd.reference_id,
+        "patient_id": opd.patient_id,
+        "patient_name": opd.patient_name,
+        "patient_phone": opd.patient_phone,
+        "hospital_id": opd.hospital_id,
+        "hospital_name": opd.hospital_name,
+        "hospital": opd.hospital_name,
+        "department": opd.department,
+        "doctor_id": opd.doctor_id,
+        "doctor_name": opd.doctor_name,
+        "doctor": opd.doctor_name,
+        "appointment_date": opd.appointment_date,
+        "appointment_time": opd.appointment_time,
+        "consultation_fee": opd.consultation_fee,
+        "status": opd.status.lower() if opd.status else "confirmed",
+        "qr_token": opd.qr_token
+    }
+
 @router.post("", response_model=OPDResponse)
 def create_opd_appointment(payload: OPDCreateRequest, db: Session = Depends(get_db)):
     hospital = db.query(HospitalModel).filter(HospitalModel.id == payload.hospital_id).first()
@@ -32,6 +54,9 @@ def create_opd_appointment(payload: OPDCreateRequest, db: Session = Depends(get_
     token = f"TOKEN_SECURE_{ref_id}_{int(datetime.datetime.utcnow().timestamp()*1000)}"
     opd_id = f"opd-{int(datetime.datetime.utcnow().timestamp()*1000)}"
 
+    app_date = payload.appointment_date or payload.date or "Today (09 Sep 2026)"
+    app_time = payload.appointment_time or payload.time or "11:30 AM"
+
     opd = OPDAppointmentModel(
         id=opd_id,
         reference_id=ref_id,
@@ -43,8 +68,8 @@ def create_opd_appointment(payload: OPDCreateRequest, db: Session = Depends(get_
         department=payload.department,
         doctor_id=payload.doctor_id,
         doctor_name=doctor.name if doctor else "Dr. Rajesh Kulkarni",
-        appointment_date=payload.date,
-        appointment_time=payload.time,
+        appointment_date=app_date,
+        appointment_time=app_time,
         consultation_fee=doctor.consultation_fee if doctor else 800,
         status="CONFIRMED",
         qr_token=token
@@ -69,20 +94,19 @@ def create_opd_appointment(payload: OPDCreateRequest, db: Session = Depends(get_
     db.commit()
     db.refresh(opd)
 
-    return {
-        "id": opd.id,
-        "reference_id": opd.reference_id,
-        "patient_id": opd.patient_id,
-        "patient_name": opd.patient_name,
-        "patient_phone": opd.patient_phone,
-        "hospital_id": opd.hospital_id,
-        "hospital_name": opd.hospital_name,
-        "department": opd.department,
-        "doctor_id": opd.doctor_id,
-        "doctor_name": opd.doctor_name,
-        "appointment_date": opd.appointment_date,
-        "appointment_time": opd.appointment_time,
-        "consultation_fee": opd.consultation_fee,
-        "status": opd.status,
-        "qr_token": opd.qr_token
-    }
+    return opd_to_dict(opd)
+
+@router.get("/{appointment_id}")
+def get_opd_appointment(appointment_id: str, db: Session = Depends(get_db)):
+    opd = db.query(OPDAppointmentModel).filter(OPDAppointmentModel.id == appointment_id).first()
+    if not opd:
+        raise HTTPException(status_code=404, detail="Appointment not found")
+    return opd_to_dict(opd)
+
+@router.get("/reference/{reference_id}")
+def get_opd_by_reference(reference_id: str, db: Session = Depends(get_db)):
+    clean_ref = reference_id.strip().upper()
+    opd = db.query(OPDAppointmentModel).filter(OPDAppointmentModel.reference_id == clean_ref).first()
+    if not opd:
+        raise HTTPException(status_code=404, detail=f"Appointment with reference ID {clean_ref} not found")
+    return opd_to_dict(opd)

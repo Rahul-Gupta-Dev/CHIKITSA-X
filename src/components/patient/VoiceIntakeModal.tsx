@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { mockVoiceService } from '../../services/apiServices';
+import { voiceService } from '../../services/apiServices';
 import type { SymptomIntake } from '../../types';
 import { DisclaimerBanner } from '../common/DisclaimerBanner';
 import { Mic, MicOff, Volume2, CheckCircle, Sparkles, X, AlertTriangle, Info } from 'lucide-react';
@@ -104,7 +104,7 @@ export const VoiceIntakeModal: React.FC<Props> = ({ isOpen, onClose, onIntakeCom
     setErrorMessage(null);
     setIsProcessing(true);
     try {
-      const intakeData = await mockVoiceService.processVoiceTranscript(transcript);
+      const intakeData = await voiceService.processVoiceTranscript(transcript);
       setResult(intakeData);
     } finally {
       setIsProcessing(false);

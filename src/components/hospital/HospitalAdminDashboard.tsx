@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../../db/database';
+import { qrService } from '../../services/apiServices';
 import type { OPDRegistration, PatientConsent } from '../../types';
 import { QrCode, Search, CheckCircle2, AlertCircle, Building2, Lock, Key, Camera } from 'lucide-react';
 import { QRCameraScannerModal } from './QRCameraScannerModal';
@@ -24,11 +25,11 @@ export const HospitalAdminDashboard: React.FC<Props> = ({ onConsentRequested }) 
     }
   }, [appointments.length]);
 
-  const handleVerify = (targetId?: string) => {
+  const handleVerify = async (targetId?: string) => {
     const queryId = (targetId || inputRefId).trim();
     if (!queryId) return;
 
-    const res = db.verifyQRPass(queryId, 'Reception Desk Staff (Anil)');
+    const res = await qrService.verifyPass(queryId, 'Reception Desk Staff (Anil)');
     setVerificationResult(res);
 
     if (res.success && res.opd) {

@@ -24,6 +24,14 @@ def doctor_to_dict(d: DoctorModel) -> Dict[str, Any]:
         "avatar": d.avatar
     }
 
+@router.get("", response_model=List[DoctorOut])
+def get_doctors(hospital_id: str = None, db: Session = Depends(get_db)):
+    query = db.query(DoctorModel)
+    if hospital_id:
+        query = query.filter(DoctorModel.hospital_id == hospital_id)
+    doctors = query.all()
+    return [doctor_to_dict(d) for d in doctors]
+
 @router.get("/{doctor_id}", response_model=DoctorOut)
 def get_doctor(doctor_id: str, db: Session = Depends(get_db)):
     doc = db.query(DoctorModel).filter(DoctorModel.id == doctor_id).first()

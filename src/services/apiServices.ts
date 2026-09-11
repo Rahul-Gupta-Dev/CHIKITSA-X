@@ -3,6 +3,8 @@ import type {
   MedicalRecord,
   TriageResult,
   Hospital,
+  Doctor,
+  PatientProfile,
   OPDRegistration,
   TreatmentCostEstimate,
   SchemeEligibilityResult,
@@ -10,15 +12,326 @@ import type {
   FinanceScenario
 } from '../types';
 import { db } from '../db/database';
+import { apiClient } from './apiClient';
+
+/**
+ * Real FastAPI Backend Services with LocalDB Fallback (Phase 1B)
+ */
+export const patientService = {
+  getProfile: async (patientId: string = 'usr-patient-1'): Promise<PatientProfile> => {
+    try {
+      const data = await apiClient.get<any>(`/patients/${patientId}/profile`);
+      if (data && (data.id || data.userId)) {
+        return {
+          id: data.id || 'pat-sharma-1',
+          userId: data.userId || data.user_id || patientId,
+          fullName: data.fullName || data.full_name || '',
+          age: data.age || 0,
+          gender: data.gender || 'Other',
+          bloodGroup: data.bloodGroup || data.blood_group || 'O+',
+          phone: data.phone || '',
+          email: data.email || '',
+          address: data.address || '',
+          city: data.city || '',
+          pincode: data.pincode || '',
+          emergencyContact: data.emergencyContact || data.emergency_contact || { name: '', relationship: '', phone: '' },
+          symptoms: data.symptoms || [],
+          medicalHistory: data.medicalHistory || data.medical_history || [],
+          medications: data.medications || [],
+          allergies: data.allergies || [],
+          vitalSigns: data.vitalSigns || data.vital_signs,
+          careStage: data.careStage || data.care_stage || 1,
+          financialBudgetPreference: data.financialBudgetPreference || data.financial_budget_preference || 'MEDIUM',
+          hasInsurance: Boolean(data.hasInsurance ?? data.has_insurance),
+          insuranceProvider: data.insuranceProvider || data.insurance_provider,
+          policyNumber: data.policyNumber || data.policy_number,
+          hasGovernmentCard: Boolean(data.hasGovernmentCard ?? data.has_government_card),
+          rationCardType: data.rationCardType || data.ration_card_type,
+          incomeCategory: data.incomeCategory || data.income_category
+        };
+      }
+    } catch (err) {
+      console.warn('[patientService] FastAPI endpoint unavailable, falling back to LocalDB:', err);
+    }
+    return db.getPatientProfile();
+  },
+
+  updateProfile: async (updatedFields: Partial<PatientProfile>, patientId: string = 'usr-patient-1'): Promise<PatientProfile> => {
+    try {
+      const data = await apiClient.put<any>(`/patients/${patientId}`, updatedFields);
+      if (data && (data.id || data.userId)) {
+        db.updatePatientProfile(updatedFields);
+        return {
+          ...db.getPatientProfile(),
+          fullName: data.fullName || data.full_name || updatedFields.fullName,
+          age: data.age ?? updatedFields.age,
+          bloodGroup: data.bloodGroup || data.blood_group || updatedFields.bloodGroup
+        };
+      }
+    } catch (err) {
+      console.warn('[patientService] FastAPI update failed, falling back to LocalDB:', err);
+    }
+    return db.updatePatientProfile(updatedFields);
+  }
+};
+
+export const hospitalService = {
+  getHospitals: async (): Promise<Hospital[]> => {
+    try {
+      const data = await apiClient.get<Hospital[]>('/hospitals');
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    } catch (err) {
+      console.warn('[hospitalService] FastAPI /hospitals endpoint unavailable, falling back to LocalDB:', err);
+    }
+    return db.getHospitals();
+  },
+
+  getHospitalById: async (id: string): Promise<Hospital | undefined> => {
+    try {
+      const data = await apiClient.get<Hospital>(`/hospitals/${id}`);
+      if (data && data.id) return data;
+    } catch (err) {
+      console.warn(`[hospitalService] FastAPI /hospitals/${id} unavailable, falling back to LocalDB:`, err);
+    }
+    return db.getHospitals().find(h => h.id === id);
+  },
+
+  recommendHospitals: async (
+    filter: 'CARE_SCORE' | 'LOWEST_COST' | 'NEAREST' = 'CARE_SCORE',
+    patientId: string = 'usr-patient-1'
+  ): Promise<Hospital[]> => {
+    try {
+      const profile = db.getPatientProfile();
+      const response = await apiClient.post<{ hospitals?: Hospital[]; recommendations?: any[] }>('/hospitals/recommend', {
+        patient_id: patientId,
+        budget_preference: profile.financialBudgetPreference || 'MEDIUM',
+        specialty: 'Cardiology'
+      });
+      if (response && Array.isArray(response.hospitals) && response.hospitals.length > 0) {
+        let list = response.hospitals;
+        if (filter === 'LOWEST_COST') {
+          list = [...list].sort((a, b) => a.estimatedCostRange.min - b.estimatedCostRange.min);
+        } else if (filter === 'NEAREST') {
+          list = [...list].sort((a, b) => a.distanceKm - b.distanceKm);
+        } else {
+          list = [...list].sort((a, b) => (b.chikitsaxCareScore || b.care_score || 0) - (a.chikitsaxCareScore || a.care_score || 0));
+        }
+        return list;
+      }
+    } catch (err) {
+      console.warn('[hospitalService] FastAPI recommendation failed, falling back to LocalDB:', err);
+    }
+    return mockHospitalService.getRankedHospitals(filter);
+  }
+};
+
+export const doctorService = {
+  getDoctors: async (hospitalId?: string): Promise<Doctor[]> => {
+    try {
+      const endpoint = hospitalId ? `/doctors?hospital_id=${hospitalId}` : '/doctors';
+      const data = await apiClient.get<Doctor[]>(endpoint);
+      if (Array.isArray(data) && data.length > 0) return data;
+    } catch (err) {
+      console.warn('[doctorService] FastAPI /doctors endpoint unavailable, falling back to LocalDB:', err);
+    }
+    return db.getDoctors();
+  },
+
+  getDoctorById: async (doctorId: string): Promise<Doctor | undefined> => {
+    try {
+      const data = await apiClient.get<Doctor>(`/doctors/${doctorId}`);
+      if (data && data.id) return data;
+    } catch (err) {
+      console.warn(`[doctorService] FastAPI /doctors/${doctorId} unavailable, falling back to LocalDB:`, err);
+    }
+    return db.getDoctors().find(d => d.id === doctorId);
+  }
+};
+
+export const opdService = {
+  bookAppointment: async (
+    hospitalId: string,
+    hospitalName: string,
+    department: string,
+    doctorId: string,
+    doctorName: string,
+    appointmentDate: string,
+    appointmentTime: string
+  ): Promise<OPDRegistration> => {
+    try {
+      const payload = {
+        patient_id: 'usr-patient-1',
+        hospital_id: hospitalId,
+        doctor_id: doctorId,
+        department,
+        appointment_date: appointmentDate,
+        appointment_time: appointmentTime,
+        date: appointmentDate,
+        time: appointmentTime
+      };
+      const res = await apiClient.post<any>('/opd', payload);
+      if (res && res.reference_id) {
+        const opdRecord: OPDRegistration = {
+          id: res.id || res.appointment_id || `opd-${Date.now()}`,
+          referenceId: res.reference_id,
+          patientId: res.patient_id || 'usr-patient-1',
+          patientName: res.patient_name || 'Ramesh Sharma',
+          patientPhone: res.patient_phone || '+91 98765 43210',
+          hospitalId,
+          hospitalName: res.hospital_name || res.hospital || hospitalName,
+          department,
+          doctorId,
+          doctorName: res.doctor_name || res.doctor || doctorName,
+          appointmentDate: res.appointment_date || appointmentDate,
+          appointmentTime: res.appointment_time || appointmentTime,
+          consultationFee: res.consultation_fee || 800,
+          status: 'CONFIRMED',
+          createdAt: new Date().toLocaleDateString('en-IN'),
+          qrToken: res.qr_token || `TOKEN_SECURE_${res.reference_id}_${Date.now()}`
+        };
+        db.createOPDRegistration(opdRecord);
+        return opdRecord;
+      }
+    } catch (err) {
+      console.warn('[opdService] Backend /api/opd failed, falling back to LocalDB:', err);
+    }
+    return mockOPDService.bookAppointment(hospitalId, hospitalName, department, doctorId, doctorName, appointmentDate, appointmentTime);
+  },
+
+  getAppointmentByRef: async (referenceId: string): Promise<OPDRegistration | null> => {
+    try {
+      const res = await apiClient.get<any>(`/opd/reference/${referenceId}`);
+      if (res && res.reference_id) {
+        return {
+          id: res.id || res.appointment_id,
+          referenceId: res.reference_id,
+          patientId: res.patient_id || 'usr-patient-1',
+          patientName: res.patient_name || 'Ramesh Sharma',
+          patientPhone: res.patient_phone || '+91 98765 43210',
+          hospitalId: res.hospital_id || 'hosp-1',
+          hospitalName: res.hospital_name || res.hospital || 'CarePlus Super Specialty Hospital',
+          department: res.department,
+          doctorId: res.doctor_id || 'doc-1',
+          doctorName: res.doctor_name || res.doctor || 'Dr. Rajesh Kulkarni',
+          appointmentDate: res.appointment_date,
+          appointmentTime: res.appointment_time,
+          consultationFee: res.consultation_fee || 800,
+          status: (res.status || 'CONFIRMED').toUpperCase() as any,
+          createdAt: new Date().toLocaleDateString('en-IN'),
+          qrToken: res.qr_token || `TOKEN_SECURE_${res.reference_id}`
+        };
+      }
+    } catch (err) {
+      console.warn(`[opdService] Backend /api/opd/reference/${referenceId} failed, checking LocalDB:`, err);
+    }
+    const local = db.getOPDRegistrations().find(o => o.referenceId === referenceId);
+    return local || null;
+  }
+};
+
+export const qrService = {
+  generateQR: async (appointmentId: string): Promise<{ reference_id: string; secure_token: string; qr_payload: string }> => {
+    try {
+      const res = await apiClient.post<any>('/qr', { appointment_id: appointmentId });
+      if (res && res.reference_id) {
+        return {
+          reference_id: res.reference_id,
+          secure_token: res.secure_token || res.token,
+          qr_payload: res.qr_payload || `CHIKITSAX_SECURE_PASS:${res.reference_id}:${res.secure_token || res.token}`
+        };
+      }
+    } catch (err) {
+      console.warn('[qrService] Backend /api/qr failed, falling back to LocalDB format:', err);
+    }
+    const local = db.getOPDRegistrations().find(o => o.id === appointmentId || o.referenceId === appointmentId);
+    const ref = local ? local.referenceId : appointmentId;
+    const tok = local ? local.qrToken : `TOKEN_SECURE_${ref}`;
+    return {
+      reference_id: ref,
+      secure_token: tok,
+      qr_payload: `CHIKITSAX_SECURE_PASS:${ref}:${tok}`
+    };
+  },
+
+  verifyPass: async (referenceId: string, staffName: string = 'Reception Desk Staff'): Promise<{ success: boolean; opd?: OPDRegistration; message: string }> => {
+    try {
+      const res = await apiClient.post<any>('/hospital/verify', { reference_id: referenceId, staff_name: staffName });
+      if (res) {
+        const isSuccess = Boolean(res.verified);
+        let opdRecord: OPDRegistration | undefined = undefined;
+        if (res.appointment) {
+          opdRecord = {
+            id: res.appointment.id || `opd-${res.reference_id}`,
+            referenceId: res.reference_id || referenceId,
+            patientId: res.appointment.patientId || 'usr-patient-1',
+            patientName: res.appointment.patientName || 'Ramesh Sharma',
+            patientPhone: res.appointment.patientPhone || '+91 98765 43210',
+            hospitalId: 'hosp-1',
+            hospitalName: res.appointment.hospitalName || res.hospital || 'CarePlus Super Specialty Hospital',
+            department: res.appointment.department || res.department || 'Cardiology',
+            doctorId: 'doc-1',
+            doctorName: res.appointment.doctorName || res.doctor || 'Dr. Rajesh Kulkarni',
+            appointmentDate: res.appointment.appointmentDate || res.appointment_date || 'Today',
+            appointmentTime: res.appointment.appointmentTime || res.appointment_time || '11:30 AM',
+            consultationFee: 800,
+            status: 'VERIFIED',
+            createdAt: new Date().toLocaleDateString('en-IN'),
+            qrToken: `TOKEN_SECURE_${res.reference_id}`
+          };
+          db.createOPDRegistration(opdRecord);
+        }
+        return {
+          success: isSuccess,
+          opd: opdRecord,
+          message: res.message || (isSuccess ? 'Verification successful' : 'Verification failed')
+        };
+      }
+    } catch (err) {
+      console.warn('[qrService] Backend /api/hospital/verify failed, falling back to LocalDB:', err);
+    }
+    return db.verifyQRPass(referenceId, staffName);
+  }
+};
 
 /**
  * 1. AI Voice Intake API Service
  */
+export const voiceService = {
+  processVoiceTranscript: async (transcriptText: string, patientId: string = 'usr-patient-1'): Promise<SymptomIntake> => {
+    try {
+      const response = await apiClient.post<any>('/intake', {
+        patient_id: patientId,
+        transcript: transcriptText,
+        language: 'en-IN',
+        duration: '30s'
+      });
+      if (response && (response.id || response.intake_id)) {
+        const intakeId = response.id || response.intake_id;
+        const intake: SymptomIntake = {
+          id: intakeId,
+          patientId: response.patient_id || patientId,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          rawTranscript: response.raw_transcript || transcriptText,
+          extractedSymptoms: response.extracted_symptoms || [],
+          duration: response.duration || '24 Hours',
+          severity: response.severity || 'Moderate',
+          affectedBodyPart: response.affected_body_part || 'General',
+          isEmergencyAlert: Boolean(response.is_emergency_alert)
+        };
+        db.addSymptomIntake(intake);
+        return intake;
+      }
+    } catch (err) {
+      console.warn('[voiceService] FastAPI /api/intake failed, falling back to LocalDB:', err);
+    }
+    return mockVoiceService.processVoiceTranscript(transcriptText);
+  }
+};
+
 export const mockVoiceService = {
   processVoiceTranscript: async (transcriptText: string): Promise<SymptomIntake> => {
-    // Simulate API processing delay
-    await new Promise(r => setTimeout(r, 600));
-
     const lower = transcriptText.toLowerCase();
     const symptoms: string[] = [];
 
@@ -81,14 +394,58 @@ export const mockVoiceService = {
 /**
  * 2. Medical Record OCR Upload API Service
  */
+export const ocrService = {
+  processUploadedFile: async (
+    fileName: string,
+    fileType: 'PDF' | 'JPG' | 'PNG',
+    category: 'Prescription' | 'Lab Report' | 'Discharge Summary' | 'Radiology Report' | 'Other',
+    fileObject?: File,
+    patientId: string = 'usr-patient-1'
+  ): Promise<MedicalRecord> => {
+    try {
+      let res: any;
+      if (fileObject && fileObject.size > 0 && typeof FormData !== 'undefined') {
+        const formData = new FormData();
+        formData.append('patient_id', patientId);
+        formData.append('category', category);
+        formData.append('file', fileObject, fileName);
+        res = await apiClient.postFormData<any>('/medical-records/upload', formData);
+      } else {
+        res = await apiClient.post<any>('/medical-records', {
+          patient_id: patientId,
+          file_name: fileName,
+          file_type: fileType,
+          category: category
+        });
+      }
+      if (res && (res.id || res.record_id)) {
+        const recId = res.id || res.record_id;
+        const record: MedicalRecord = {
+          id: recId,
+          patientId: res.patient_id || patientId,
+          fileName: res.file_name || fileName,
+          fileType: (res.file_type || fileType).toUpperCase() as any,
+          category: res.category || category,
+          uploadDate: res.upload_date || new Date().toLocaleDateString('en-IN'),
+          ocrExtractedData: res.ocr_extracted_data || res.extracted_fields || {},
+          isVerifiedByPatient: Boolean(res.is_verified_by_patient ?? true)
+        };
+        db.addMedicalRecord(record);
+        return record;
+      }
+    } catch (err) {
+      console.warn('[ocrService] FastAPI /api/medical-records upload failed, falling back to LocalDB:', err);
+    }
+    return mockOCRService.processUploadedFile(fileName, fileType, category);
+  }
+};
+
 export const mockOCRService = {
   processUploadedFile: async (
     fileName: string,
     fileType: 'PDF' | 'JPG' | 'PNG',
     category: 'Prescription' | 'Lab Report' | 'Discharge Summary' | 'Radiology Report' | 'Other'
   ): Promise<MedicalRecord> => {
-    await new Promise(r => setTimeout(r, 800)); // Simulate OCR extraction pipeline
-
     let ocrData: MedicalRecord['ocrExtractedData'] = {};
 
     if (category === 'Prescription') {
@@ -135,10 +492,37 @@ export const mockOCRService = {
 /**
  * 3. AI Triage Engine Service
  */
+export const triageService = {
+  runClinicalTriage: async (patientId: string = 'usr-patient-1'): Promise<TriageResult> => {
+    try {
+      const response = await apiClient.post<any>('/triage', { patient_id: patientId });
+      if (response && (response.id || response.patient_id)) {
+        const triage: TriageResult = {
+          id: response.id || `tri-${Date.now()}`,
+          patientId: response.patient_id || patientId,
+          timestamp: new Date().toLocaleString('en-IN'),
+          riskLevel: (response.risk_level || 'MODERATE').toUpperCase() as any,
+          urgency: response.urgency || 'Prompt Consultation (24h)',
+          symptomsConsidered: response.symptoms_considered || [],
+          clinicalReasoning: response.reasoning || response.clinical_reasoning || [],
+          recommendedSpecialty: Array.isArray(response.recommended_specialties)
+            ? response.recommended_specialties.join(' / ')
+            : response.recommended_specialty || 'General Medicine',
+          recommendedNextStep: response.next_action || response.recommended_next_step || 'Consult Outpatient OPD',
+          isEmergencyTriggered: Boolean(response.is_emergency_triggered || response.risk_level === 'HIGH')
+        };
+        db.saveTriageResult(triage);
+        return triage;
+      }
+    } catch (err) {
+      console.warn('[triageService] FastAPI /api/triage failed, falling back to LocalDB:', err);
+    }
+    return mockTriageService.runClinicalTriage();
+  }
+};
+
 export const mockTriageService = {
   runClinicalTriage: async (): Promise<TriageResult> => {
-    await new Promise(r => setTimeout(r, 700));
-
     const profile = db.getPatientProfile();
     const intakes = db.getSymptomIntakes();
     const latestIntake = intakes.length > 0 ? intakes[0] : null;
