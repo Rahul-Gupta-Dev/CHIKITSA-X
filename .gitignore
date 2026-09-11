@@ -32,3 +32,13 @@ build/
 *.njsproj
 *.sln
 *.sw?
+
+# Python & SQLite Backend
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+backend/venv/
+backend/chikitsax.db
+*.db
+

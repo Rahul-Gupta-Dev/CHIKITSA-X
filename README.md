@@ -82,12 +82,29 @@ For Smart India Hackathon evaluation, a **SIH Demo Role Switcher Bar** is pinned
 
 ---
 
-## 🛠️ Technology Stack & Architecture
+## 🛠️ Technology Stack & System Architecture
+
+```
+React 19 + TypeScript + Vite (Frontend)
+        ↓
+API Client (src/services/apiClient.ts)
+        ↓
+FastAPI REST API (backend/app/main.py)
+        ↓
+SQLAlchemy 2.0 ORM Engine
+        ↓
+SQLite (backend/chikitsax.db) / PostgreSQL Ready
+        ↓
+CHIKITSAX Modular Services (Voice Intake / OCR / Triage / Care Score / Financial Assistance)
+```
 
 - **Frontend Framework:** React 19 + TypeScript + Vite
+- **Backend API:** FastAPI (Python 3.10+) with Uvicorn ASGI Server
+- **ORM & Database:** SQLAlchemy 2.0 with SQLite (`backend/chikitsax.db` auto-created & seeded on startup)
+- **API Client:** Configurable REST API client (`src/services/apiClient.ts`) with fallback to LocalDB
 - **Design System:** Custom Vanilla CSS Design System with HSL tokens, Glassmorphism, Micro-animations, Google Fonts (Inter & Outfit), and High-Contrast Accessibility.
-- **State Management & Persistence:** Modular `LocalDB` layer with `localStorage` sync and real-time audit logging across role switches.
-- **QR Code Engine:** HTML5 Canvas QR Rendering (`qrcode` library).
+- **State Management & Persistence:** Modular `LocalDB` layer with `localStorage` fallback sync and real-time audit logging across role switches.
+- **QR Code Engine:** HTML5 Canvas QR Rendering (`qrcode` library) + Camera QR Scanner (`jsQR`).
 - **Voice Engine:** Web Speech API (`webkitSpeechRecognition`) with pre-loaded fallback audio transcripts.
 - **Icons & Visuals:** `lucide-react`.
 
